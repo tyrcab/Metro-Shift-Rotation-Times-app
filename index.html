@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DNG Rotation Shift Times</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#4CAF50">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 10px; background: #f9f9f9; }
+    h2, h3 { text-align: center; }
+    select, input, button { padding: 10px; margin: 5px; font-size: 1rem; border-radius: 6px; border: 1px solid #ccc; }
+    select { width: 100%; max-width: 400px; display: block; margin: 10px auto; }
+    .table-container { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; background: white; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 0.9rem; }
+    th { background: #f4f4f4; font-size: 1rem; }
+    input[type="text"] { width: 100%; box-sizing: border-box; font-size: 0.9rem; padding: 6px; }
+    .save-btn { display: block; width: 100%; max-width: 300px; margin: 15px auto; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; }
+    .save-btn:hover { background: #45a049; }
+  </style>
+</head>
+<body>
+  <h2>DNG Rotation Shift Times</h2>
+  <label for="shiftLine" style="display:block;text-align:center;">Select Shift Line:</label>
+  <select id="shiftLine" onchange="displaySchedule()">
+    <option value="">-- Choose a line --</option>
+  </select>
+  <div id="schedule"></div>
+
+  <script>
+    const schedules = {
+      line1:{name:"Line 1",times:{Sunday:{number:"57",time:"02:16 - 09:46"},Monday:{number:"123",time:"03:30 - 11:30"},Tuesday:{number:"123",time:"03:30 - 11:30"},Wednesday:{number:"AV29",time:"04:30 - 12:30"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+      line2:{name:"Line 2",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"126",time:"14:55 - 22:58"},Tuesday:{number:"AV6",time:"15:00 - 23:00"},Wednesday:{number:"122",time:"14:38 - 22:02"},Thursday:{number:"124",time:"14:46 - 22:41"},Friday:{number:"126",time:"14:38 - 21:38"},Saturday:{number:"OFF",time:"OFF"}}},
+      // ... keep your full schedule here ...
+    };
+
+    const select = document.getElementById("shiftLine");
+    for (let key in schedules) {
+      const option = document.createElement("option");
+      option.value = key;
+      option.textContent = schedules[key].name;
+      select.appendChild(option);
+    }
+
+    function displaySchedule() {
+      const line = document.getElementById("shiftLine").value;
+      const scheduleDiv = document.getElementById("schedule");
+      if (!line) { scheduleDiv.innerHTML = ""; return; }
+
+      const schedule = schedules[line];
+      let html = `<h3>${schedule.name}</h3>`;
+      html += `<div class="table-container"><table><tr><th>Day</th><th>Shift Number</th><th>Shift Time</th></tr>`;
+
+      for (let day in schedule.times) {
+        html += `
+          <tr>
+            <td>${day}</td>
+            <td><input type="text" id="${line}-${day}-num" value="${schedule.times[day].number}"></td>
+            <td><input type="text" id="${line}-${day}-time" value="${schedule.times[day].time}"></td>
+          </tr>
+        `;
+      }
+
+      html += `</table></div>`;
+      html += `<button class="save-btn" onclick="saveSchedule('${line}')">Save Changes</button>`;
+      scheduleDiv.innerHTML = html;
+    }
+
+    function saveSchedule(line) {
+      const schedule = schedules[line];
+      for (let day in schedule.times) {
+        schedule.times[day].number = document.getElementById(`${line}-${day}-num`).value;
+        schedule.times[day].time = document.getElementById(`${line}-${day}-time`).value;
+      }
+      alert(`${schedule.name} updated successfully! ✅`);
+    }
+
+    // Register service worker for PWA
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("Service Worker registered"))
+        .catch((err) => console.log("SW registration failed:", err));
+    }
+  </script>
+</body>
+</html>
