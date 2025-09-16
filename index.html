@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DNG Rotation Shift Times</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 10px; background: #f9f9f9; }
+    h2, h3 { text-align: center; }
+    select, input, button { padding: 10px; margin: 5px; font-size: 1rem; border-radius: 6px; border: 1px solid #ccc; }
+    select { width: 100%; max-width: 400px; display: block; margin: 10px auto; }
+    .table-container { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; background: white; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 0.9rem; }
+    th { background: #f4f4f4; font-size: 1rem; }
+    input[type="text"] { width: 100%; box-sizing: border-box; font-size: 0.9rem; padding: 6px; }
+    .save-btn { display: block; width: 100%; max-width: 300px; margin: 15px auto; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; }
+    .save-btn:hover { background: #45a049; }
+  </style>
+</head>
+<body>
+  <h2>DNG Rotation Shift Times</h2>
+  <label for="shiftLine" style="display:block;text-align:center;">Select Shift Line:</label>
+  <select id="shiftLine" onchange="displaySchedule()">
+    <option value="">-- Choose a line --</option>
+  </select>
+  <div id="schedule"></div>
+
+  <script>
+    const schedules = {
+      line1:{name:"Line 1",times:{Sunday:{number:"57",time:"02:16 - 09:46"},Monday:{number:"123",time:"03:30 - 11:30"},Tuesday:{number:"123",time:"03:30 - 11:30"},Wednesday:{number:"AV29",time:"04:30 - 12:30"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+      line2:{name:"Line 2",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"126",time:"14:55 - 22:58"},Tuesday:{number:"AV6",time:"15:00 - 23:00"},Wednesday:{number:"122",time:"14:38 - 22:02"},Thursday:{number:"124",time:"14:46 - 22:41"},Friday:{number:"126",time:"14:38 - 21:38"},Saturday:{number:"OFF",time:"OFF"}}},
+      line3:{name:"Line 3",times:{Sunday:{number:"63",time:"05:00 - 13:00"},Monday:{number:"119",time:"03:00 - 11:00"},Tuesday:{number:"AV15",time:"04:00 - 12:00"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"127",time:"04:13 - 11:39"},Friday:{number:"131",time:"04:29 - 12:29"},Saturday:{number:"OFF",time:"OFF"}}},
+      line4:{name:"Line 4",times:{Sunday:{number:"66",time:"15:08 - 22:46"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"124",time:"14:46 - 22:41"},Wednesday:{number:"126",time:"14:55 - 22:58"},Thursday:{number:"126",time:"14:55 - 22:58"},Friday:{number:"132",time:"14:55 - 22:12"},Saturday:{number:"OFF",time:"OFF"}}},
+      line5:{name:"Line 5",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"117",time:"02:00 - 10:00"},Thursday:{number:"117",time:"02:00 - 10:00"},Friday:{number:"123",time:"03:17 - 11:09"},Saturday:{number:"77",time:"03:20 - 11:19"}}},
+      line6:{name:"Line 6",times:{Sunday:{number:"8028",time:"16:00 - 00:00"},Monday:{number:"120",time:"14:22 - 22:22"},Tuesday:{number:"122",time:"14:38 - 22:02"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"124",time:"14:21 - 21:45"},Saturday:{number:"82",time:"12:27 - 20:19"}}},
+      line7:{name:"Line 7",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"AV11",time:"05:00 - 13:00"},Tuesday:{number:"8019",time:"04:00 - 12:00"},Wednesday:{number:"8021",time:"05:00 - 13:00"},Thursday:{number:"12",time:"04:40 - 12:49"},Friday:{number:"135",time:"04:40 - 12:19"},Saturday:{number:"OFF",time:"OFF"}}},
+      line8:{name:"Line 8",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"130",time:"16:11 - 00:31"},Tuesday:{number:"132",time:"17:04 - 01:21"},Wednesday:{number:"AV42",time:"17:00 - 01:00"},Thursday:{number:"AV42",time:"17:00 - 01:00"},Friday:{number:"136",time:"16:11 - 00:31"},Saturday:{number:"OFF",time:"OFF"}}},
+      line9:{name:"Line 9",times:{Sunday:{number:"61",time:"04:06 - 11:39"},Monday:{number:"125",time:"03:40 - 11:27"},Tuesday:{number:"125",time:"03:40 - 11:27"},Wednesday:{number:"AV29",time:"04:30 - 12:30"},Thursday:{number:"DDO",time:"DDO"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+      line10:{name:"Line 10",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"126",time:"14:55 - 22:58"},Wednesday:{number:"124",time:"14:46 - 22:41"},Thursday:{number:"AV10",time:"16:00 - 00:00"},Friday:{number:"134",time:"16:03 - 00:14"},Saturday:{number:"8024",time:"16:00 - 00:00"}}},
+      line11:{name:"Line 11",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"119",time:"03:00 - 11:00"},Wednesday:{number:"119",time:"03:00 - 11:00"},Thursday:{number:"123",time:"03:30 - 11:30"},Friday:{number:"121",time:"03:00 - 11:00"},Saturday:{number:"81",time:"05:00 - 13:00"}}},
+      line12:{name:"Line 12",times:{Sunday:{number:"62",time:"12:47 - 20:46"},Monday:{number:"124",time:"14:46 - 22:41"},Tuesday:{number:"AV6",time:"15:00 - 23:00"},Wednesday:{number:"120",time:"14:22 - 22:22"},Thursday:{number:"122",time:"14:38 - 22:02"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+      line13:{name:"Line 13",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"123",time:"03:30 - 11:30"},Thursday:{number:"119",time:"03:00 - 11:00"},Friday:{number:"129",time:"03:53 - 11:39"},Saturday:{number:"83",time:"05:11 - 13:09"}}},
+      line14:{name:"Line 14",times:{Sunday:{number:"60",time:"12:11 - 20:26"},Monday:{number:"118",time:"12:47 - 20:02"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"118",time:"12:47 - 20:02"},Friday:{number:"122",time:"12:06 - 19:51"},Saturday:{number:"78",time:"11:47 - 19:39"}}},
+      line15:{name:"Line 15",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"117",time:"02:00 - 10:00"},Tuesday:{number:"117",time:"02:00 - 10:00"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"125",time:"03:40 - 11:27"},Friday:{number:"127",time:"03:40 - 10:44"},Saturday:{number:"75",time:"02:16 - 09:46"}}},
+      line16:{name:"Line 16",times:{Sunday:{number:"8026",time:"16:00 - 00:00"},Monday:{number:"AV10",time:"16:00 - 00:00"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"AV10",time:"16:00 - 00:00"},Thursday:{number:"AV10",time:"16:00 - 00:00"},Friday:{number:"128",time:"14:41 - 22:41"},Saturday:{number:"OFF",time:"OFF"}}},
+      line17:{name:"Line 17",times:{Sunday:{number:"65",time:"05:09 - 12:59"},Monday:{number:"8019",time:"04:00 - 12:00"},Tuesday:{number:"127",time:"04:13 - 11:39"},Wednesday:{number:"125",time:"03:40 - 11:27"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+      line18:{name:"Line 18",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"136",time:"18:30 - 02:30"},Wednesday:{number:"134",time:"18:13 - 02:31"},Thursday:{number:"134",time:"18:13 - 02:31"},Friday:{number:"138",time:"18:41 - 02:36"},Saturday:{number:"84",time:"17:00 - 01:00"}}},
+      line19:{name:"Line 19",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"131",time:"09:36 - 17:35"},Tuesday:{number:"AV33",time:"09:00 - 17:00"},Wednesday:{number:"131",time:"09:36 - 17:35"},Thursday:{number:"AV33",time:"09:00 - 17:00"},Friday:{number:"137",time:"09:28 - 17:56"},Saturday:{number:"OFF",time:"OFF"}}},
+      line20:{name:"Line 20",times:{Sunday:{number:"64",time:"14:41 - 22:30"},Monday:{number:"AV18",time:"14:00 - 22:00"},Tuesday:{number:"118",time:"12:47 - 20:02"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"8036",time:"14:00 - 22:00"},Saturday:{number:"80",time:"12:16 - 20:24"}}},
+      line21:{name:"Line 21",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"121",time:"03:15 - 11:19"},Thursday:{number:"121",time:"03:15 - 11:19"},Friday:{number:"125",time:"03:18 - 11:19"},Saturday:{number:"79",time:"04:33 - 12:49"}}},
+      line22:{name:"Line 22",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"136",time:"18:30 - 02:30"},Tuesday:{number:"AV16",time:"18:00 - 02:00"},Wednesday:{number:"136",time:"18:30 - 02:30"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"144",time:"19:00 - 03:00"},Saturday:{number:"86",time:"18:57 - 02:34"}}},
+      line23:{name:"Line 23",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"AV33",time:"09:00 - 17:00"},Tuesday:{number:"131",time:"09:36 - 17:35"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"131",time:"09:36 - 17:35"},Friday:{number:"8035",time:"09:00 - 17:00"},Saturday:{number:"87",time:"09:11 - 16:59"}}},
+      line24:{name:"Line 24",times:{Sunday:{number:"58",time:"11:22 - 19:09"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"118",time:"12:47 - 20:02"},Thursday:{number:"AV18",time:"14:00 - 22:00"},Friday:{number:"120",time:"12:01 - 19:41"},Saturday:{number:"76",time:"11:41 - 19:37"}}},
+      line25:{name:"Line 25",times:{Sunday:{number:"AV7",time:"08:00 - 16:00"},Monday:{number:"AV31",time:"06:00 - 14:00"},Tuesday:{number:"8021",time:"05:00 - 13:00"},Wednesday:{number:"129",time:"04:40 - 12:49"},Thursday:{number:"DDO",time:"DDO"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+      line26:{name:"Line 26",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"134",time:"18:13 - 02:31"},Tuesday:{number:"134",time:"18:13 - 02:31"},Wednesday:{number:"132",time:"17:04 - 01:21"},Thursday:{number:"136",time:"18:30 - 02:30"},Friday:{number:"142",time:"18:43 - 02:34"},Saturday:{number:"OFF",time:"OFF"}}},
+      line27:{name:"Line 27",times:{Sunday:{number:"67",time:"06:09 - 14:09"},Monday:{number:"AV31",time:"06:00 - 14:00"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"8021",time:"05:00 - 13:00"},Friday:{number:"8033",time:"06:00 - 14:00"},Saturday:{number:"85",time:"07:31 - 15:31"}}},
+      line28:{name:"Line 28",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"128",time:"16:03 - 00:29"},Tuesday:{number:"130",time:"16:11 - 00:31"},Wednesday:{number:"130",time:"16:11 - 00:31"},Thursday:{number:"120",time:"14:22 - 22:22"},Friday:{number:"8038",time:"16:00 - 00:00"},Saturday:{number:"OFF",time:"OFF"}}},
+      line29:{name:"Line 29",times:{Sunday:{number:"59",time:"02:53 - 10:09"},Monday:{number:"127",time:"04:13 - 11:39"},Tuesday:{number:"AV15",time:"04:00 - 12:00"},Wednesday:{number:"8019",time:"04:00 - 12:00"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+      line30:{name:"Line 30",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"132",time:"17:04 - 01:21"},Tuesday:{number:"128",time:"16:03 - 00:29"},Wednesday:{number:"128",time:"16:03 - 00:29"},Thursday:{number:"130",time:"16:11 - 00:31"},Friday:{number:"8040",time:"17:00 - 01:00"},Saturday:{number:"OFF",time:"OFF"}}},
+      line31:{name:"Line 31",times:{Sunday:{number:"8025",time:"04:00 - 12:00"},Monday:{number:"129",time:"04:40 - 12:49"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"8019",time:"04:00 - 12:00"},Friday:{number:"119",time:"03:00 - 11:00"},Saturday:{number:"8023",time:"04:00 - 12:00"}}},
+      line32:{name:"Line 32",times:{Sunday:{number:"68",time:"17:00 - 01:00"},Monday:{number:"AV42",time:"17:00 - 01:00"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"AV42",time:"17:00 - 01:00"},Thursday:{number:"132",time:"17:04 - 01:21"},Friday:{number:"140",time:"18:41 - 02:11"},Saturday:{number:"OFF",time:"OFF"}}},
+      line33:{name:"Line 33",times:{Sunday:{number:"8027",time:"04:00 - 12:00"},Monday:{number:"8021",time:"05:00 - 13:00"},Tuesday:{number:"129",time:"04:40 - 12:49"},Wednesday:{number:"127",time:"04:13 - 11:39"},Thursday:{number:"DDO",time:"DDO"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+      line34:{name:"Line 34",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"AV18",time:"14:00 - 22:00"},Tuesday:{number:"120",time:"14:22 - 22:22"},Wednesday:{number:"142",time:"13:01 - 21:01"},Thursday:{number:"142",time:"13:01 - 21:01"},Friday:{number:"8034",time:"14:00 - 22:00"},Saturday:{number:"OFF",time:"OFF"}}},
+      line35:{name:"Line 35",times:{Sunday:{number:"8029",time:"05:00 - 13:00"},Monday:{number:"121",time:"03:15 - 11:19"},Tuesday:{number:"121",time:"03:15 - 11:19"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"133",time:"04:29 - 12:29"},Saturday:{number:"8021",time:"04:00 - 12:00"}}},
+      line36:{name:"Line 36",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"122",time:"14:38 - 22:02"},Tuesday:{number:"AV10",time:"16:00 - 00:00"},Wednesday:{number:"AV10",time:"16:00 - 00:00"},Thursday:{number:"128",time:"16:03 - 00:29"},Friday:{number:"130",time:"14:46 - 22:21"},Saturday:{number:"OFF",time:"OFF"}}}
+    };
+
+    const select = document.getElementById("shiftLine");
+    for (let key in schedules) {
+      const option = document.createElement("option");
+      option.value = key;
+      option.textContent = schedules[key].name;
+      select.appendChild(option);
+    }
+
+    function displaySchedule() {
+      const line = document.getElementById("shiftLine").value;
+      const scheduleDiv = document.getElementById("schedule");
+      if (!line) { scheduleDiv.innerHTML = ""; return; }
+
+      const schedule = schedules[line];
+      let html = `<h3>${schedule.name}</h3>`;
+      html += `<div class="table-container"><table><tr><th>Day</th><th>Shift Number</th><th>Shift Time</th></tr>`;
+
+      for (let day in schedule.times) {
+        html += `
+          <tr>
+            <td>${day}</td>
+            <td><input type="text" id="${line}-${day}-num" value="${schedule.times[day].number}"></td>
+            <td><input type="text" id="${line}-${day}-time" value="${schedule.times[day].time}"></td>
+          </tr>
+        `;
+      }
+
+      html += `</table></div>`;
+      html += `<button class="save-btn" onclick="saveSchedule('${line}')">Save Changes</button>`;
+      scheduleDiv.innerHTML = html;
+    }
+
+    function saveSchedule(line) {
+      const schedule = schedules[line];
+      for (let day in schedule.times) {
+        schedule.times[day].number = document.getElementById(`${line}-${day}-num`).value;
+        schedule.times[day].time = document.getElementById(`${line}-${day}-time`).value;
+      }
+      alert(`${schedule.name} updated successfully! ✅`);
+    }
+  </script>
+</body>
+</html>
