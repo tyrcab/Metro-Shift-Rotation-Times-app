@@ -1,20 +1,7 @@
-const CACHE_NAME = "dng-shifts-cache-v1";
-const urlsToCache = [
-  "./",
-  "./index.html",
-  "./manifest.json",
-  "https://raw.githubusercontent.com/tyrcab/Metro-Shift-Rotation-Times-app/main/icons/icon-192.png",
-  "https://raw.githubusercontent.com/tyrcab/Metro-Shift-Rotation-Times-app/main/icons/icon-512.png"
-];
-
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
-  );
+self.addEventListener('install', event => {
+  console.log('Service worker installed');
 });
 
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request).then(response => response || fetch(event.request))
-  );
+self.addEventListener('fetch', event => {
+  // Add caching here if needed
 });
