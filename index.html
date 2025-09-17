@@ -25,27 +25,34 @@
     }
     select { 
       padding: 10px; 
-      margin: 10px auto; 
       font-size: 1rem; 
       border-radius: 6px; 
       border: 1px solid #ccc; 
-      width: 200px; 
+      width: 80%; 
+      max-width: 250px; 
     }
     .table-container { overflow-x: auto; margin-top: 10px; }
-    table { border-collapse: collapse; width: 90%; max-width: 800px; margin: 0 auto 20px auto; background: white; }
+    table { border-collapse: collapse; width: 95%; max-width: 800px; margin: 0 auto 20px auto; background: white; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 0.9rem; }
     th { background: #f4f4f4; font-size: 1rem; }
     h3 { text-align: center; margin-top: 20px; }
+    @media (max-width: 600px) {
+      th, td { font-size: 0.8rem; padding: 6px; }
+      select { width: 95%; }
+      table { width: 100%; }
+    }
   </style>
 </head>
 <body>
   <div class="header-container">
     <h2>DNG Rotation Shift Times</h2>
     <div class="description">AUGUST 2025 DNG Master Rotation effective 19-10-2025</div>
-    <label for="shiftLine">Select Shift Line:</label>
-    <select id="shiftLine" onchange="displaySchedule()">
-      <option value="">-- Choose a line --</option>
-    </select>
+    <div class="select-container">
+      <label for="shiftLine">Select Shift Line:</label><br>
+      <select id="shiftLine" onchange="displaySchedule()">
+        <option value="">-- Choose a line --</option>
+      </select>
+    </div>
   </div>
 
   <div id="schedule"></div>
@@ -58,7 +65,7 @@
       line4:{name:"Line 4",times:{Sunday:{number:"66",time:"15:08 - 22:46"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"124",time:"14:46 - 22:41"},Wednesday:{number:"126",time:"14:55 - 22:58"},Thursday:{number:"126",time:"14:55 - 22:58"},Friday:{number:"132",time:"14:55 - 22:12"},Saturday:{number:"OFF",time:"OFF"}}},
       line5:{name:"Line 5",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"117",time:"02:00 - 10:00"},Thursday:{number:"117",time:"02:00 - 10:00"},Friday:{number:"123",time:"03:17 - 11:09"},Saturday:{number:"77",time:"03:20 - 11:19"}}},
       line6:{name:"Line 6",times:{Sunday:{number:"8028",time:"16:00 - 00:00"},Monday:{number:"120",time:"14:22 - 22:22"},Tuesday:{number:"122",time:"14:38 - 22:02"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"124",time:"14:21 - 21:45"},Saturday:{number:"82",time:"12:27 - 20:19"}}},
-      line7:{name:"Line 7",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"AV11",time:"05:00 - 13:00"},Tuesday:{number:"8019",time:"04:00 - 12:00"},Wednesday:{number:"8021",time:"05:00 - 13:00"},Thursday:{number:"12",time:"04:40 - 12:49"},Friday:{number:"135",time:"04:40 - 12:19"},Saturday:{number:"OFF",time:"OFF"}}},
+      line7:{name:"Line 7",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"AV11",time:"05:00 - 13:00"},Tuesday:{number:"8019",time:"04:00 - 12:00"},Wednesday:{number:"8021",time:"05:00 - 13:00"},Thursday:{number:"129",time:"04:40 - 12:49"},Friday:{number:"135",time:"04:40 - 12:19"},Saturday:{number:"OFF",time:"OFF"}}},
       line8:{name:"Line 8",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"130",time:"16:11 - 00:31"},Tuesday:{number:"132",time:"17:04 - 01:21"},Wednesday:{number:"AV42",time:"17:00 - 01:00"},Thursday:{number:"AV42",time:"17:00 - 01:00"},Friday:{number:"136",time:"16:11 - 00:31"},Saturday:{number:"OFF",time:"OFF"}}},
       line9:{name:"Line 9",times:{Sunday:{number:"61",time:"04:06 - 11:39"},Monday:{number:"125",time:"03:40 - 11:27"},Tuesday:{number:"125",time:"03:40 - 11:27"},Wednesday:{number:"AV29",time:"04:30 - 12:30"},Thursday:{number:"DDO",time:"DDO"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
       line10:{name:"Line 10",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"126",time:"14:55 - 22:58"},Wednesday:{number:"124",time:"14:46 - 22:41"},Thursday:{number:"AV10",time:"16:00 - 00:00"},Friday:{number:"134",time:"16:03 - 00:14"},Saturday:{number:"8024",time:"16:00 - 00:00"}}},
