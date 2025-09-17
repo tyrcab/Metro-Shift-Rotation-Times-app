@@ -1,7 +1,40 @@
+const CACHE_NAME = 'dng-rotation-cache-v1';
+const urlsToCache = [
+  './',
+  './index.html',
+  './manifest.json',
+  './sw.js',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
+];
+
+// Install event: cache files
 self.addEventListener('install', event => {
-  console.log('Service worker installed');
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(urlsToCache))
+      .then(() => self.skipWaiting())
+  );
 });
 
+// Activate event: clean old caches
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => 
+      Promise.all(
+        cacheNames.map(name => {
+          if (name !== CACHE_NAME) return caches.delete(name);
+        })
+      )
+    )
+  );
+  self.clients.claim();
+});
+
+// Fetch event: respond with cached resources or fetch from network
 self.addEventListener('fetch', event => {
-  // Add caching here if needed
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => response || fetch(event.request))
+  );
 });
