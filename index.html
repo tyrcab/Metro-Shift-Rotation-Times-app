@@ -77,7 +77,7 @@
       line36:{name:"Line 36",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"122",time:"14:38 - 22:02"},Tuesday:{number:"AV10",time:"16:00 - 00:00"},Wednesday:{number:"AV10",time:"16:00 - 00:00"},Thursday:{number:"128",time:"16:03 - 00:29"},Friday:{number:"130",time:"14:46 - 22:21"},Saturday:{number:"OFF",time:"OFF"}}}
     };
 
-    const select = document.getElementById("shiftLine");
+     const select = document.getElementById("shiftLine");
     for (let key in schedules) {
       const option = document.createElement("option");
       option.value = key;
@@ -92,13 +92,25 @@
 
       const schedule = schedules[line];
       let html = `<div class="table-container"><table><tr><th>Day</th><th>Shift Number</th><th>Shift Time</th></tr>`;
+
       for (let day in schedule.times) {
+        const shiftNumber = schedule.times[day].number;
+        const shiftTime = schedule.times[day].time;
+
+        let numberStyle = '';
+        let timeStyle = '';
+        if (shiftNumber === "OFF") numberStyle = 'style="color:green;font-weight:bold"';
+        if (shiftNumber === "DDO") numberStyle = 'style="color:red;font-weight:bold"';
+        if (shiftTime === "OFF") timeStyle = 'style="color:green;font-weight:bold"';
+        if (shiftTime === "DDO") timeStyle = 'style="color:red;font-weight:bold"';
+
         html += `<tr>
           <td>${day}</td>
-          <td>${schedule.times[day].number}</td>
-          <td>${schedule.times[day].time}</td>
+          <td ${numberStyle}>${shiftNumber}</td>
+          <td ${timeStyle}>${shiftTime}</td>
         </tr>`;
       }
+
       html += `</table></div>`;
       scheduleDiv.innerHTML = html;
     }
@@ -110,4 +122,3 @@
   </script>
 </body>
 </html>
-
