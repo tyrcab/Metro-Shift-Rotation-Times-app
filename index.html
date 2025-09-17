@@ -5,25 +5,55 @@
   <title>DNG Rotation Shift Times</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial, sans-serif; margin: 10px; background: #f9f9f9; }
-    h2, h3 { text-align: center; }
-    select, input, button { padding: 10px; margin: 5px; font-size: 1rem; border-radius: 6px; border: 1px solid #ccc; }
-    select { width: 100%; max-width: 400px; display: block; margin: 10px auto; }
+    body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
+    .header {
+      position: sticky;
+      top: 0;
+      background: #f9f9f9;
+      z-index: 1000;
+      padding: 10px 0 15px;
+      border-bottom: 1px solid #ccc;
+    }
+    h2 { text-align: center; margin: 0; }
+    .description {
+      text-align: center;
+      color: blue;
+      font-weight: bold;
+      margin: 5px 0 10px;
+    }
+    label { display: block; text-align: center; margin-top: 5px; }
+    select {
+      padding: 10px;
+      margin: 8px auto 0;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 100%;
+      max-width: 400px;
+      display: block;
+    }
     .table-container { overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; margin-top: 10px; background: white; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 0.9rem; }
-    th { background: #f4f4f4; font-size: 1rem; }
-    input[type="text"] { width: 100%; box-sizing: border-box; font-size: 0.9rem; padding: 6px; }
-    .save-btn { display: block; width: 100%; max-width: 300px; margin: 15px auto; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; }
-    .save-btn:hover { background: #45a049; }
+    th {
+      background: #f4f4f4;
+      font-size: 1rem;
+      position: sticky;
+      top: 140px; /* keeps column headers below sticky header */
+      z-index: 999;
+    }
   </style>
 </head>
 <body>
-  <h2>DNG Rotation Shift Times</h2>
-  <label for="shiftLine" style="display:block;text-align:center;">Select Shift Line:</label>
-  <select id="shiftLine" onchange="displaySchedule()">
-    <option value="">-- Choose a line --</option>
-  </select>
+  <div class="header">
+    <h2>DNG Rotation Shift Times</h2>
+    <div class="description">AUGUST 2025 DNG Master Rotation effective 19-10-2025</div>
+    <label for="shiftLine">Select Shift Line:</label>
+    <select id="shiftLine" onchange="displaySchedule()">
+      <option value="">-- Choose a line --</option>
+    </select>
+  </div>
+
   <div id="schedule"></div>
 
   <script>
@@ -57,54 +87,34 @@
       line27:{name:"Line 27",times:{Sunday:{number:"67",time:"06:09 - 14:09"},Monday:{number:"AV31",time:"06:00 - 14:00"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"8021",time:"05:00 - 13:00"},Friday:{number:"8033",time:"06:00 - 14:00"},Saturday:{number:"85",time:"07:31 - 15:31"}}},
       line28:{name:"Line 28",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"128",time:"16:03 - 00:29"},Tuesday:{number:"130",time:"16:11 - 00:31"},Wednesday:{number:"130",time:"16:11 - 00:31"},Thursday:{number:"120",time:"14:22 - 22:22"},Friday:{number:"8038",time:"16:00 - 00:00"},Saturday:{number:"OFF",time:"OFF"}}},
       line29:{name:"Line 29",times:{Sunday:{number:"59",time:"02:53 - 10:09"},Monday:{number:"127",time:"04:13 - 11:39"},Tuesday:{number:"AV15",time:"04:00 - 12:00"},Wednesday:{number:"8019",time:"04:00 - 12:00"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
-      line30:{name:"Line 30",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"132",time:"17:04 - 01:21"},Tuesday:{number:"128",time:"16:03 - 00:29"},Wednesday:{number:"128",time:"16:03 - 00:29"},Thursday:{number:"130",time:"16:11 - 00:31"},Friday:{number:"8040",time:"17:00 - 01:00"},Saturday:{number:"OFF",time:"OFF"}}},
-      line31:{name:"Line 31",times:{Sunday:{number:"8025",time:"04:00 - 12:00"},Monday:{number:"129",time:"04:40 - 12:49"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"8019",time:"04:00 - 12:00"},Friday:{number:"119",time:"03:00 - 11:00"},Saturday:{number:"8023",time:"04:00 - 12:00"}}},
-      line32:{name:"Line 32",times:{Sunday:{number:"68",time:"17:00 - 01:00"},Monday:{number:"AV42",time:"17:00 - 01:00"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"AV42",time:"17:00 - 01:00"},Thursday:{number:"132",time:"17:04 - 01:21"},Friday:{number:"140",time:"18:41 - 02:11"},Saturday:{number:"OFF",time:"OFF"}}},
-      line33:{name:"Line 33",times:{Sunday:{number:"8027",time:"04:00 - 12:00"},Monday:{number:"8021",time:"05:00 - 13:00"},Tuesday:{number:"129",time:"04:40 - 12:49"},Wednesday:{number:"127",time:"04:13 - 11:39"},Thursday:{number:"DDO",time:"DDO"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
-      line34:{name:"Line 34",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"AV18",time:"14:00 - 22:00"},Tuesday:{number:"120",time:"14:22 - 22:22"},Wednesday:{number:"142",time:"13:01 - 21:01"},Thursday:{number:"142",time:"13:01 - 21:01"},Friday:{number:"8034",time:"14:00 - 22:00"},Saturday:{number:"OFF",time:"OFF"}}},
-      line35:{name:"Line 35",times:{Sunday:{number:"8029",time:"05:00 - 13:00"},Monday:{number:"121",time:"03:15 - 11:19"},Tuesday:{number:"121",time:"03:15 - 11:19"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"133",time:"04:29 - 12:29"},Saturday:{number:"8021",time:"04:00 - 12:00"}}},
-      line36:{name:"Line 36",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"122",time:"14:38 - 22:02"},Tuesday:{number:"AV10",time:"16:00 - 00:00"},Wednesday:{number:"AV10",time:"16:00 - 00:00"},Thursday:{number:"128",time:"16:03 - 00:29"},Friday:{number:"130",time:"14:46 - 22:21"},Saturday:{number:"OFF",time:"OFF"}}}
+      line30:{name:"Line 30",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"132",time:"17:04 - 01:21"},Tuesday:{number:"128",time:"16:03 - 00:29"},Wednesday:{number:"128",time:"16:03 - 00:29"},Thursday:{number:"130",time:"16:11 - 00:31"},Friday:{number:"140",time:"17:07 - 01:51"},Saturday:{number:"88",time:"17:00 - 01:00"}}},
+      line31:{name:"Line 31",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"129",time:"03:53 - 11:39"},Tuesday:{number:"117",time:"02:00 - 10:00"},Wednesday:{number:"117",time:"02:00 - 10:00"},Thursday:{number:"123",time:"03:30 - 11:30"},Friday:{number:"121",time:"03:15 - 11:19"},Saturday:{number:"89",time:"05:07 - 13:01"}}},
+      line32:{name:"Line 32",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"AV16",time:"18:00 - 02:00"},Tuesday:{number:"134",time:"18:13 - 02:31"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"136",time:"18:30 - 02:30"},Friday:{number:"144",time:"19:00 - 03:00"},Saturday:{number:"90",time:"18:30 - 02:30"}}},
+      line33:{name:"Line 33",times:{Sunday:{number:"69",time:"06:15 - 14:15"},Monday:{number:"8033",time:"06:00 - 14:00"},Tuesday:{number:"8033",time:"06:00 - 14:00"},Wednesday:{number:"8033",time:"06:00 - 14:00"},Thursday:{number:"8033",time:"06:00 - 14:00"},Friday:{number:"8033",time:"06:00 - 14:00"},Saturday:{number:"8033",time:"06:00 - 14:00"}}},
+      line34:{name:"Line 34",times:{Sunday:{number:"70",time:"07:01 - 15:01"},Monday:{number:"8035",time:"09:00 - 17:00"},Tuesday:{number:"8035",time:"09:00 - 17:00"},Wednesday:{number:"8035",time:"09:00 - 17:00"},Thursday:{number:"8035",time:"09:00 - 17:00"},Friday:{number:"8035",time:"09:00 - 17:00"},Saturday:{number:"8035",time:"09:00 - 17:00"}}},
+      line35:{name:"Line 35",times:{Sunday:{number:"71",time:"08:10 - 16:10"},Monday:{number:"8038",time:"16:00 - 00:00"},Tuesday:{number:"8038",time:"16:00 - 00:00"},Wednesday:{number:"8038",time:"16:00 - 00:00"},Thursday:{number:"8038",time:"16:00 - 00:00"},Friday:{number:"8038",time:"16:00 - 00:00"},Saturday:{number:"8038",time:"16:00 - 00:00"}}},
+      line36:{name:"Line 36",times:{Sunday:{number:"72",time:"09:40 - 17:40"},Monday:{number:"AV33",time:"09:00 - 17:00"},Tuesday:{number:"8035",time:"09:00 - 17:00"},Wednesday:{number:"8035",time:"09:00 - 17:00"},Thursday:{number:"8035",time:"09:00 - 17:00"},Friday:{number:"8035",time:"09:00 - 17:00"},Saturday:{number:"8035",time:"09:00 - 17:00"}}}
     };
 
     const select = document.getElementById("shiftLine");
-    for (let key in schedules) {
-      const option = document.createElement("option");
-      option.value = key;
-      option.textContent = schedules[key].name;
-      select.appendChild(option);
-    }
+    Object.keys(schedules).forEach(key => {
+      const opt = document.createElement("option");
+      opt.value = key;
+      opt.textContent = schedules[key].name;
+      select.appendChild(opt);
+    });
 
     function displaySchedule() {
-      const line = document.getElementById("shiftLine").value;
+      const key = select.value;
       const scheduleDiv = document.getElementById("schedule");
-      if (!line) { scheduleDiv.innerHTML = ""; return; }
-
-      const schedule = schedules[line];
-      let html = `<h3>${schedule.name}</h3>`;
-      html += `<div class="table-container"><table><tr><th>Day</th><th>Shift Number</th><th>Shift Time</th></tr>`;
-
-      for (let day in schedule.times) {
-        html += `
-          <tr>
-            <td>${day}</td>
-            <td><input type="text" id="${line}-${day}-num" value="${schedule.times[day].number}"></td>
-            <td><input type="text" id="${line}-${day}-time" value="${schedule.times[day].time}"></td>
-          </tr>
-        `;
-      }
-
-      html += `</table></div>`;
-      html += `<button class="save-btn" onclick="saveSchedule('${line}')">Save Changes</button>`;
+      if (!key) { scheduleDiv.innerHTML = ""; return; }
+      const data = schedules[key];
+      let html = `<div class="table-container"><table><thead><tr><th>Day</th><th>Shift Number</th><th>Shift Time</th></tr></thead><tbody>`;
+      Object.entries(data.times).forEach(([day,info])=>{
+        html += `<tr><td>${day}</td><td>${info.number}</td><td>${info.time}</td></tr>`;
+      });
+      html += `</tbody></table></div>`;
       scheduleDiv.innerHTML = html;
-    }
-
-    function saveSchedule(line) {
-      const schedule = schedules[line];
-      for (let day in schedule.times) {
-        schedule.times[day].number = document.getElementById(`${line}-${day}-num`).value;
-        schedule.times[day].time = document.getElementById(`${line}-${day}-time`).value;
-      }
-      alert(`${schedule.name} updated successfully! ✅`);
     }
   </script>
 </body>
