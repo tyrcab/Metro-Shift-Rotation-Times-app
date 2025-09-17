@@ -5,21 +5,21 @@
   <title>DNG Rotation Shift Times</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Icons for Android & iOS home screen -->
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Icons -->
   <link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/tyrcab/Metro-Shift-Rotation-Times-app/main/icons/icon-192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="https://raw.githubusercontent.com/tyrcab/Metro-Shift-Rotation-Times-app/main/icons/icon-192.png">
 
+  <!-- iOS PWA meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="DNG Shifts">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <style>
     body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
-    .header-container {
-      position: sticky;
-      top: 0;
-      background: #f9f9f9;
-      z-index: 1000;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #ccc;
-      text-align: center;
-    }
+    .header-container { position: sticky; top: 0; background: #f9f9f9; z-index: 1000; padding-bottom: 10px; border-bottom: 1px solid #ccc; text-align: center; }
     .logo { width: 60px; height: auto; margin-top: 10px; }
     h2, .description { margin: 5px 0; }
     .description { color: blue; font-weight: bold; }
@@ -40,7 +40,7 @@
 </head>
 <body>
   <div class="header-container">
-    <img class="logo" src="https://raw.githubusercontent.com/tyrcab/Metro-Shift-Rotation-Times-app/main/icons/icon-512.png" alt="Logo">
+    <img class="logo" src="https://raw.githubusercontent.com/tyrcab/Metro-Shift-Rotation-Times-app/main/icons/icon-192.png" alt="Logo">
     <h2>DNG Rotation Shift Times</h2>
     <div class="description">AUGUST 2025 DNG Master Rotation effective 19-10-2025</div>
     <div class="select-container">
@@ -93,25 +93,38 @@
       line36:{name:"Line 36",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"122",time:"14:38 - 22:02"},Tuesday:{number:"AV10",time:"16:00 - 00:00"},Wednesday:{number:"AV10",time:"16:00 - 00:00"},Thursday:{number:"128",time:"16:03 - 00:29"},Friday:{number:"130",time:"14:46 - 22:21"},Saturday:{number:"OFF",time:"OFF"}}}
     };
 
-    const select = document.getElementById("shiftLine");
-    Object.entries(schedules).forEach(([key, val]) => {
-      const opt = document.createElement("option");
-      opt.value = key;
-      opt.textContent = val.name;
-      select.appendChild(opt);
-    });
+     const select = document.getElementById("shiftLine");
+    for (let key in schedules) {
+      const option = document.createElement("option");
+      option.value = key;
+      option.textContent = schedules[key].name;
+      select.appendChild(option);
+    }
 
     function displaySchedule() {
-      const selected = select.value;
+      const line = document.getElementById("shiftLine").value;
       const scheduleDiv = document.getElementById("schedule");
-      if (!selected) { scheduleDiv.innerHTML = ""; return; }
-      const { name, times } = schedules[selected];
-      let html = `<h3>${name}</h3><div class="table-container"><table><thead><tr><th>Day</th><th>Shift Number</th><th>Shift Time</th></tr></thead><tbody>`;
-      for (const day in times) {
-        html += `<tr><td>${day}</td><td>${times[day].number}</td><td>${times[day].time}</td></tr>`;
+      if (!line) { scheduleDiv.innerHTML = ""; return; }
+
+      const schedule = schedules[line];
+      let html = `<h3>${schedule.name}</h3>`;
+      html += `<div class="table-container"><table><tr><th>Day</th><th>Shift Number</th><th>Shift Time</th></tr>`;
+
+      for (let day in schedule.times) {
+        html += `<tr><td>${day}</td><td>${schedule.times[day].number}</td><td>${schedule.times[day].time}</td></tr>`;
       }
-      html += `</tbody></table></div>`;
+
+      html += `</table></div>`;
       scheduleDiv.innerHTML = html;
+    }
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+          console.log('Service Worker registered.', reg);
+        }).catch(err => console.log('Service Worker failed:', err));
+      });
     }
   </script>
 </body>
