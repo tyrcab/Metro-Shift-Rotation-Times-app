@@ -4,37 +4,24 @@
   <meta charset="UTF-8">
   <title>DNG Rotation Shift Times</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- Theme & PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1E90FF">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  
-  <!-- iOS splash screens -->
-  <link rel="apple-touch-startup-image" href="icons/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
-  <link rel="apple-touch-startup-image" href="icons/splash-1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)">
-  <link rel="apple-touch-startup-image" href="icons/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
-  <link rel="apple-touch-startup-image" href="icons/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
-  <link rel="apple-touch-startup-image" href="icons/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
-  <link rel="apple-touch-startup-image" href="icons/splash-1668x2224.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)">
-  <link rel="apple-touch-startup-image" href="icons/splash-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)">
-  <link rel="apple-touch-startup-image" href="icons/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
-
   <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#f9f9f9; }
-    header { display:flex; flex-direction:column; align-items:center; background:#fff; padding:10px 0; position:sticky; top:0; z-index:1000; box-shadow:0 2px 4px rgba(0,0,0,0.1);}
-    header img { width:60px; height:60px; }
-    header h2 { margin:5px 0 0 0; text-align:center; }
-    header .description { color:blue; font-weight:bold; text-align:center; font-size:0.9rem; }
-    select, table { max-width: 600px; margin: 10px auto; }
-    select { width: 90%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid #ccc; display:block; text-align:center; }
-    .table-container { overflow-x:auto; margin-bottom:20px; }
-    table { border-collapse:collapse; width:100%; background:white; }
-    th, td { border:1px solid #ccc; padding:8px; text-align:center; font-size:0.9rem; }
-    th { background:#f4f4f4; font-size:1rem; }
-    @media (max-width:600px){ select{width:95%;} table{font-size:0.8rem;} }
+    body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
+    header { position: sticky; top: 0; background: white; z-index: 1000; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding-bottom: 10px; }
+    header img { height: 60px; margin-top: 10px; }
+    header h2 { margin: 5px 0; }
+    header .description { color: #1E90FF; font-weight: bold; margin-bottom: 10px; }
+    select { width: 90%; max-width: 400px; padding: 10px; margin: 10px auto; display: block; font-size: 1rem; border-radius: 6px; border: 1px solid #ccc; text-align: center; }
+    .table-container { overflow-x: auto; margin: 10px; }
+    table { border-collapse: collapse; width: 100%; background: white; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 0.9rem; }
+    th { background: #f4f4f4; font-size: 1rem; }
+    @media (max-width: 600px) {
+      th, td { font-size: 0.8rem; padding: 6px; }
+      header img { height: 50px; }
+      select { font-size: 0.9rem; padding: 8px; }
+    }
   </style>
 </head>
 <body>
@@ -44,7 +31,6 @@
     <div class="description">AUGUST 2025 DNG Master Rotation effective 19-10-2025</div>
   </header>
 
-  <label for="shiftLine" style="display:block; text-align:center; margin-top:10px;">Select Shift Line:</label>
   <select id="shiftLine" onchange="displaySchedule()">
     <option value="">-- Choose a line --</option>
   </select>
@@ -116,12 +102,12 @@
       html += `</table></div>`;
       scheduleDiv.innerHTML = html;
     }
-  </script>
 
-  <script>
+    // Register service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js').then(() => console.log('Service worker registered'));
     }
   </script>
 </body>
 </html>
+
