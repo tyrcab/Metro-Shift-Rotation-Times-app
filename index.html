@@ -6,65 +6,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
-    
-    .header {
+    .header-container {
       position: sticky;
       top: 0;
       background: #f9f9f9;
       z-index: 1000;
-      padding: 10px 0 15px;
+      padding-bottom: 10px;
       border-bottom: 1px solid #ccc;
-      height: 120px; /* sticky offset */
     }
-
-    h2 { text-align: center; margin: 0; }
+    h2, .description { text-align: center; margin: 5px 0; }
     .description {
-      text-align: center;
       color: blue;
       font-weight: bold;
-      margin: 5px 0 10px;
     }
-    label { display: block; text-align: center; margin-top: 5px; }
-
-    select {
-      padding: 10px;
-      margin: 8px auto 0;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 100%;
-      max-width: 400px;
-      display: block;
+    .select-container {
+      text-align: center;
+      margin: 10px 0;
     }
-
-    .table-container { overflow-x: auto; }
-
-    table { border-collapse: collapse; width: 100%; margin-top: 10px; background: white; }
+    select { 
+      padding: 10px; 
+      margin: 10px auto; 
+      font-size: 1rem; 
+      border-radius: 6px; 
+      border: 1px solid #ccc; 
+      width: 200px; 
+    }
+    .table-container { overflow-x: auto; margin-top: 10px; }
+    table { border-collapse: collapse; width: 90%; max-width: 800px; margin: 0 auto 20px auto; background: white; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 0.9rem; }
-
-    th {
-      background: #f4f4f4;
-      font-size: 1rem;
-      position: sticky;
-      top: 120px; /* matches header height */
-      z-index: 999;
-    }
-
-    /* Make first column (Day) sticky */
-    td:first-child, th:first-child {
-      position: sticky;
-      left: 0;
-      background: #f4f4f4;
-      z-index: 998;
-    }
-
-    /* Alternating row colors */
-    tbody tr:nth-child(odd) { background-color: #ffffff; }
-    tbody tr:nth-child(even) { background-color: #f0f0f0; }
+    th { background: #f4f4f4; font-size: 1rem; }
+    h3 { text-align: center; margin-top: 20px; }
   </style>
 </head>
 <body>
-  <div class="header">
+  <div class="header-container">
     <h2>DNG Rotation Shift Times</h2>
     <div class="description">AUGUST 2025 DNG Master Rotation effective 19-10-2025</div>
     <label for="shiftLine">Select Shift Line:</label>
@@ -116,22 +91,22 @@
     };
 
     const select = document.getElementById("shiftLine");
-    Object.keys(schedules).forEach(key => {
+    Object.entries(schedules).forEach(([key, val]) => {
       const opt = document.createElement("option");
       opt.value = key;
-      opt.textContent = schedules[key].name;
+      opt.textContent = val.name;
       select.appendChild(opt);
     });
 
     function displaySchedule() {
-      const key = select.value;
+      const selected = select.value;
       const scheduleDiv = document.getElementById("schedule");
-      if (!key) { scheduleDiv.innerHTML = ""; return; }
-      const data = schedules[key];
-      let html = `<div class="table-container"><table><thead><tr><th>Day</th><th>Shift Number</th><th>Shift Time</th></tr></thead><tbody>`;
-      Object.entries(data.times).forEach(([day,info])=>{
-        html += `<tr><td>${day}</td><td>${info.number}</td><td>${info.time}</td></tr>`;
-      });
+      if (!selected) { scheduleDiv.innerHTML = ""; return; }
+      const { name, times } = schedules[selected];
+      let html = `<h3>${name}</h3><div class="table-container"><table><thead><tr><th>Day</th><th>Shift Number</th><th>Shift Time</th></tr></thead><tbody>`;
+      for (const day in times) {
+        html += `<tr><td>${day}</td><td>${times[day].number}</td><td>${times[day].time}</td></tr>`;
+      }
       html += `</tbody></table></div>`;
       scheduleDiv.innerHTML = html;
     }
