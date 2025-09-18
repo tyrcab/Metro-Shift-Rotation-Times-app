@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>DNG Rotation Shift Times</title>
+  <title>CFD Group Depot Rotation Shift Times</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1E90FF">
@@ -26,20 +26,71 @@
 </head>
 <body>
   <header>
-    <img src="icons/icon-192.png" alt="DNG Logo">
-    <h2>DNG Rotation Shift Times</h2>
-    <div class="description">AUGUST 2025 DNG Master Rotation effective 19-10-2025</div>
+    <img src="icons/icon-192.png" alt="Depot Logo">
+    <h2>CFD Group Depot Rotation Shift Times</h2>
+    <div class="description">AUGUST 2025 Master Rotation effective 19-10-2025</div>
   </header>
 
+  <!-- Depot Selector -->
+  <select id="depotSelect" onchange="updateLines()">
+    <option value="">-- Choose a depot --</option>
+    <option value="CBE">Cranbourne (CBE)</option>
+    <option value="DNG">Dandenong (DNG)</option>
+    <option value="EPH">East Pakenham (EPH)</option>
+    <option value="PED">Pakenham East (PED)</option>
+  </select>
+
+  <!-- Line Selector -->
   <select id="shiftLine" onchange="displaySchedule()">
     <option value="">-- Choose a line --</option>
   </select>
 
   <div id="schedule"></div>
 
+<!-- Sticky Footer -->
+<footer style="
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #1E90FF;
+  color: white;
+  text-align: center;
+  padding: 12px 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+">
+  If there are any incorrect shift times or shift numbers, please send an email to 
+  <a href="mailto:tyron.cabral@metrotrains.com.au" style="
+    color: #fff;
+    text-decoration: underline;
+    transition: color 0.3s;
+  " 
+  onmouseover="this.style.color='#FFD700';" 
+  onmouseout="this.style.color='#fff';">
+    tyron.cabral@metrotrains.com.au
+  </a>.
+</footer>
+
+<!-- Responsive style for mobile -->
+<style>
+  @media (max-width: 600px) {
+    footer {
+      padding: 8px 0;
+      font-size: 0.8rem;
+    }
+    footer a {
+      font-size: 0.8rem;
+    }
+  }
+</style>
+
   <script>
+    // Group schedules by Depot
     const schedules = {
-      line1:{name:"Line 1",times:{Sunday:{number:"57",time:"02:16 - 09:46"},Monday:{number:"123",time:"03:30 - 11:30"},Tuesday:{number:"123",time:"03:30 - 11:30"},Wednesday:{number:"AV29",time:"04:30 - 12:30"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+      DNG: {
+        line1:{name:"Line 1",times:{Sunday:{number:"57",time:"02:16 - 09:46"},Monday:{number:"123",time:"03:30 - 11:30"},Tuesday:{number:"123",time:"03:30 - 11:30"},Wednesday:{number:"AV29",time:"04:30 - 12:30"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
       line2:{name:"Line 2",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"126",time:"14:55 - 22:58"},Tuesday:{number:"AV6",time:"15:00 - 23:00"},Wednesday:{number:"122",time:"14:38 - 22:02"},Thursday:{number:"124",time:"14:46 - 22:41"},Friday:{number:"126",time:"14:38 - 21:38"},Saturday:{number:"OFF",time:"OFF"}}},
       line3:{name:"Line 3",times:{Sunday:{number:"63",time:"05:00 - 13:00"},Monday:{number:"119",time:"03:00 - 11:00"},Tuesday:{number:"AV15",time:"04:00 - 12:00"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"127",time:"04:13 - 11:39"},Friday:{number:"131",time:"04:29 - 12:29"},Saturday:{number:"OFF",time:"OFF"}}},
       line4:{name:"Line 4",times:{Sunday:{number:"66",time:"15:08 - 22:46"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"124",time:"14:46 - 22:41"},Wednesday:{number:"126",time:"14:55 - 22:58"},Thursday:{number:"126",time:"14:55 - 22:58"},Friday:{number:"132",time:"14:55 - 22:12"},Saturday:{number:"OFF",time:"OFF"}}},
@@ -75,22 +126,79 @@
       line34:{name:"Line 34",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"AV18",time:"14:00 - 22:00"},Tuesday:{number:"120",time:"14:22 - 22:22"},Wednesday:{number:"142",time:"13:01 - 21:01"},Thursday:{number:"142",time:"13:01 - 21:01"},Friday:{number:"8034",time:"14:00 - 22:00"},Saturday:{number:"OFF",time:"OFF"}}},
       line35:{name:"Line 35",times:{Sunday:{number:"8029",time:"05:00 - 13:00"},Monday:{number:"121",time:"03:15 - 11:19"},Tuesday:{number:"121",time:"03:15 - 11:19"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"133",time:"04:29 - 12:29"},Saturday:{number:"8021",time:"04:00 - 12:00"}}},
       line36:{name:"Line 36",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"122",time:"14:38 - 22:02"},Tuesday:{number:"AV10",time:"16:00 - 00:00"},Wednesday:{number:"AV10",time:"16:00 - 00:00"},Thursday:{number:"128",time:"16:03 - 00:29"},Friday:{number:"130",time:"14:46 - 22:21"},Saturday:{number:"OFF",time:"OFF"}}}
+    //... all 36 lines for DNG go here
+      },
+      CBE: {
+  line1: { name:"Line 1", times:{ Sunday:{number:"8017", time:"5:00 - 13:00"}, Monday:{number:"8015", time:"04:00 - 12:00"}, Tuesday:{number:"103", time:"03:54 - 11:11"}, Wednesday:{number:"AV15", time:"04:00 - 12:00"}, Thursday:{number:"OFF", time:"OFF"}, Friday:{number:"DDO", time:"DDO"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line2: { name:"Line 2", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"OFF", time:"OFF"}, Tuesday:{number:"8018", time:"17:00 - 01:00"}, Wednesday:{number:"112", time:"16:58 - 01:11"}, Thursday:{number:"AV42", time:"17:00 - 01:00"}, Friday:{number:"116", time:"18:44 - 02:34"}, Saturday:{number:"74", time:"18:40 - 02:34"} } },
+  line3: { name:"Line 3", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"105", time:"05:31 - 13:31"}, Tuesday:{number:"107", time:"05:32 - 13:11"}, Wednesday:{number:"107", time:"05:32 - 13:11"}, Thursday:{number:"111", time:"06:21 - 14:31"}, Friday:{number:"113", time:"06:11 - 14:11"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line4: { name:"Line 4", times:{ Sunday:{number:"50", time:"10:27 - 18:24"}, Monday:{number:"102", time:"10:32 - 18:34"}, Tuesday:{number:"102", time:"10:32 - 18:34"}, Wednesday:{number:"100", time:"10:18 - 18:12"}, Thursday:{number:"AV22", time:"12:00 - 20:00"}, Friday:{number:"OFF", time:"OFF"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line5: { name:"Line 5", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"DDO", time:"DDO"}, Tuesday:{number:"101", time:"03:06 - 10:51"}, Wednesday:{number:"101", time:"03:06 - 10:51"}, Thursday:{number:"AV15", time:"04:00 - 12:00"}, Friday:{number:"8029", time:"05:00 - 13:00"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line6: { name:"Line 6", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"AV18", time:"14:00 - 22:00"}, Tuesday:{number:"104", time:"12:43 - 20:43"}, Wednesday:{number:"OFF", time:"OFF"}, Thursday:{number:"108", time:"14:03 - 21:34"}, Friday:{number:"112", time:"13:43 - 21:34"}, Saturday:{number:"68", time:"14:43 - 22:19"} } },
+  line7: { name:"Line 7", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"107", time:"05:32 - 13:11"}, Tuesday:{number:"105", time:"05:31 - 13:31"}, Wednesday:{number:"OFF", time:"OFF"}, Thursday:{number:"103", time:"03:54 - 11:11"}, Friday:{number:"8027", time:"04:00 - 12:00"}, Saturday:{number:"8015", time:"4:00 - 12:00"} } },
+  line8: { name:"Line 8", times:{ Sunday:{number:"56", time:"17:12 - 25:32"}, Monday:{number:"114", time:"17:15 - 01:31"}, Tuesday:{number:"OFF", time:"OFF"}, Wednesday:{number:"AV10", time:"16:00 - 00:00"}, Thursday:{number:"8016", time:"16:00 - 00:00"}, Friday:{number:"8028", time:"16:00 - 00:00"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line9: { name:"Line 9", times:{ Sunday:{number:"49", time:"2:06 - 9:08"}, Monday:{number:"99", time:"02:52 - 10:12"}, Tuesday:{number:"99", time:"02:52 - 10:12"}, Wednesday:{number:"8015", time:"04:00 - 12:00"}, Thursday:{number:"OFF", time:"OFF"}, Friday:{number:"DDO", time:"DDO"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line10: { name:"Line 10", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"OFF", time:"OFF"}, Tuesday:{number:"108", time:"14:03 - 21:34"}, Wednesday:{number:"106", time:"13:23 - 21:14"}, Thursday:{number:"AV6", time:"15:00 - 23:00"}, Friday:{number:"AV10", time:"16:00 - 00:00"}, Saturday:{number:"8018", time:"16:00 - 00:00"} } },
+  line11: { name:"Line 11", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"111", time:"06:21 - 14:31"}, Tuesday:{number:"111", time:"06:21 - 14:31"}, Wednesday:{number:"109", time:"05:57 - 13:51"}, Thursday:{number:"109", time:"05:57 - 13:51"}, Friday:{number:"111", time:"05:57 - 13:51"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line12: { name:"Line 12", times:{ Sunday:{number:"52", time:"16:23 - 00:19"}, Monday:{number:"8018", time:"17:00 - 01:00"}, Tuesday:{number:"AV42", time:"17:00 - 01:00"}, Wednesday:{number:"8016", time:"16:00 - 00:00"}, Thursday:{number:"112", time:"16:58 - 01:11"}, Friday:{number:"OFF", time:"OFF"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line13: { name:"Line 13", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"DDO", time:"DDO"}, Tuesday:{number:"OFF", time:"OFF"}, Wednesday:{number:"113", time:"07:13 - 15:11"}, Thursday:{number:"113", time:"07:13 - 15:11"}, Friday:{number:"115", time:"07:13 - 15:11"}, Saturday:{number:"69", time:"9:03 - 16:51"} } },
+  line14: { name:"Line 14", times:{ Sunday:{number:"54", time:"16:52 - 01:02"}, Monday:{number:"8016", time:"16:00 - 00:00"}, Tuesday:{number:"OFF", time:"OFF"}, Wednesday:{number:"110", time:"15:30 - 23:18"}, Thursday:{number:"110", time:"15:30 - 23:18"}, Friday:{number:"8026", time:"16:00 - 00:00"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line15: { name:"Line 15", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"103", time:"03:54 - 11:11"}, Tuesday:{number:"AV15", time:"04:00 - 12:00"}, Wednesday:{number:"103", time:"03:54 - 11:11"}, Thursday:{number:"105", time:"05:31 - 13:31"}, Friday:{number:"107", time:"05:31 - 13:11"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line16: { name:"Line 16", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"100", time:"10:18 - 18:12"}, Tuesday:{number:"AV22", time:"12:00 - 20:00"}, Wednesday:{number:"AV22", time:"12:00 - 20:00"}, Thursday:{number:"102", time:"10:32 - 18:34"}, Friday:{number:"106", time:"10:48 - 18:34"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line17: { name:"Line 17", times:{ Sunday:{number:"51", time:"8:25 - 16:11"}, Monday:{number:"113", time:"07:13 - 15:11"}, Tuesday:{number:"113", time:"07:13 - 15:11"}, Wednesday:{number:"111", time:"06:21 - 14:31"}, Thursday:{number:"OFF", time:"OFF"}, Friday:{number:"DDO", time:"DDO"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line18: { name:"Line 18", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"OFF", time:"OFF"}, Tuesday:{number:"AV4", time:"13:00 - 21:00"}, Wednesday:{number:"104", time:"12:43 - 20:43"}, Thursday:{number:"104", time:"12:43 - 20:43"}, Friday:{number:"108", time:"11:16 - 19:13"}, Saturday:{number:"8016", time:"13:00 - 21:00"} } },
+  line19: { name:"Line 19", times:{ Sunday:{number:"8019", time:"9:00 - 17:00"}, Monday:{number:"115", time:"10:08 - 17:53"}, Tuesday:{number:"OFF", time:"OFF"}, Wednesday:{number:"OFF", time:"OFF"}, Thursday:{number:"115", time:"10:08 - 17:53"}, Friday:{number:"117", time:"09:24 - 17:53"}, Saturday:{number:"71", time:"9:32 - 17:11"} } },
+  line20: { name:"Line 20", times:{ Sunday:{number:"8020", time:"14:00 - 22:00"}, Monday:{number:"106", time:"13:23 - 21:14"}, Tuesday:{number:"106", time:"13:23 - 21:14"}, Wednesday:{number:"AV6", time:"15:00 - 23:00"}, Thursday:{number:"AV6", time:"15:00 - 23:00"}, Friday:{number:"OFF", time:"OFF"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line21: { name:"Line 21", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"DDO", time:"DDO"}, Tuesday:{number:"OFF", time:"OFF"}, Wednesday:{number:"99", time:"02:52 - 10:12"}, Thursday:{number:"99", time:"02:52 - 10:12"}, Friday:{number:"103", time:"02:45 - 10:12"}, Saturday:{number:"65", time:"2:06 - 9:31"} } },
+  line22: { name:"Line 22", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"108", time:"14:03 - 21:34"}, Tuesday:{number:"8016", time:"16:00 - 00:00"}, Wednesday:{number:"108", time:"14:03 - 21:34"}, Thursday:{number:"OFF", time:"OFF"}, Friday:{number:"114", time:"15:52 - 23:49"}, Saturday:{number:"70", time:"15:30 - 23:30"} } },
+  line23: { name:"Line 23", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"101", time:"03:06 - 10:51"}, Tuesday:{number:"8015", time:"04:00 - 12:00"}, Wednesday:{number:"OFF", time:"OFF"}, Thursday:{number:"101", time:"03:06 - 10:51"}, Friday:{number:"105", time:"03:14 - 11:11"}, Saturday:{number:"AV15", time:"4:00 - 12:00"} } },
+  line24: { name:"Line 24", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"104", time:"12:43 - 20:43"}, Tuesday:{number:"AV18", time:"14:00 - 22:00"}, Wednesday:{number:"AV18", time:"14:00 - 22:00"}, Thursday:{number:"106", time:"13:23 - 21:14"}, Friday:{number:"110", time:"11:56 - 19:19"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line25: { name:"Line 25", times:{ Sunday:{number:"53", time:"8:40 - 16:31"}, Monday:{number:"AV9", time:"08:30 - 16:30"}, Tuesday:{number:"115", time:"10:08 - 17:53"}, Wednesday:{number:"115", time:"10:08 - 17:53"}, Thursday:{number:"OFF", time:"OFF"}, Friday:{number:"DDO", time:"DDO"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line26: { name:"Line 26", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"OFF", time:"OFF"}, Tuesday:{number:"100", time:"10:18 - 18:12"}, Wednesday:{number:"102", time:"10:32 - 18:34"}, Thursday:{number:"100", time:"10:18 - 18:12"}, Friday:{number:"104", time:"09:52 - 18:12"}, Saturday:{number:"66", time:"10:27 - 18:24"} } },
+  line27: { name:"Line 27", times:{ Sunday:{number:"55", time:"8:47 - 16:51"}, Monday:{number:"AV23", time:"07:00 - 15:00"}, Tuesday:{number:"OFF", time:"OFF"}, Wednesday:{number:"OFF", time:"OFF"}, Thursday:{number:"AV23", time:"07:00 - 15:00"}, Friday:{number:"8031", time:"07:00 - 15:00"}, Saturday:{number:"67", time:"8:42 - 16:31"} } },
+  line28: { name:"Line 28", times:{ Sunday:{number:"8024", time:"17:00 - 01:00"}, Monday:{number:"112", time:"16:58 - 01:11"}, Tuesday:{number:"112", time:"16:58 - 01:11"}, Wednesday:{number:"8018", time:"17:00 - 01:00"}, Thursday:{number:"114", time:"17:15 - 01:31"}, Friday:{number:"OFF", time:"OFF"}, Saturday:{number:"OFF", time:"OFF"} } },
+  line29: { name:"Line 29", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"DDO", time:"DDO"}, Tuesday:{number:"OFF", time:"OFF"}, Wednesday:{number:"105", time:"05:31 - 13:31"}, Thursday:{number:"107", time:"05:32 - 13:11"}, Friday:{number:"109", time:"05:32 - 12:51"}, Saturday:{number:"8019", time:"5:00 - 13:00"} } },
+  line30: { name:"Line 30", times:{ Sunday:{number:"8022", time:"16:00 - 00:00"}, Monday:{number:"OFF", time:"OFF"}, Tuesday:{number:"114", time:"17:15 - 01:31"}, Wednesday:{number:"114", time:"17:15 - 01:31"}, Thursday:{number:"OFF", time:"OFF"}, Friday:{number:"AV42", time:"17:00 - 01:00"}, Saturday:{number:"72", time:"16:23 - 00:19"} } },
+  line31: { name:"Line 31", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"109", time:"05:57 - 13:51"}, Tuesday:{number:"109", time:"05:57 - 13:51"}, Wednesday:{number:"OFF", time:"OFF"}, Thursday:{number:"8015", time:"04:00 - 12:00"}, Friday:{number:"8025", time:"04:00 - 12:00"}, Saturday:{number:"8017", time:"4:00 - 12:00"} } },
+  line32: { name:"Line 32", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"110", time:"15:30 - 23:18"}, Tuesday:{number:"110", time:"15:30 - 23:18"}, Wednesday:{number:"AV42", time:"17:00 - 25:00"}, Thursday:{number:"8018", time:"17:00 - 01:00"}, Friday:{number:"AV42", time:"17:00 - 01:00"}, Saturday:{number:"OFF", time:"OFF"} } }
+        //... Add Cranbourne lines here
+      },
+      EPH: {
+        line1:{name:"Line 1",times:{Sunday:{number:"201",time:"07:00 - 15:00"},Monday:{number:"202",time:"08:00 - 16:00"}}},
+        // Add East Pakenham lines here
+      },
+      PED: {
+        line1:{name:"Line 1",times:{Sunday:{number:"301",time:"04:30 - 12:30"},Monday:{number:"302",time:"05:30 - 13:30"}}},
+        // Add Pakenham East lines here
+      }
     };
 
-     const select = document.getElementById("shiftLine");
-    for (let key in schedules) {
-      const option = document.createElement("option");
-      option.value = key;
-      option.textContent = schedules[key].name;
-      select.appendChild(option);
+    const depotSelect = document.getElementById("depotSelect");
+    const lineSelect = document.getElementById("shiftLine");
+
+    // Update Line dropdown when Depot is chosen
+    function updateLines() {
+      const depot = depotSelect.value;
+      lineSelect.innerHTML = `<option value="">-- Choose a line --</option>`;
+
+      if (!depot || !schedules[depot]) return;
+
+      for (let key in schedules[depot]) {
+        const option = document.createElement("option");
+        option.value = key;
+        option.textContent = schedules[depot][key].name;
+        lineSelect.appendChild(option);
+      }
     }
 
+    // Show schedule table
     function displaySchedule() {
-      const line = document.getElementById("shiftLine").value;
+      const depot = depotSelect.value;
+      const line = lineSelect.value;
       const scheduleDiv = document.getElementById("schedule");
-      if (!line) { scheduleDiv.innerHTML = ""; return; }
+      if (!depot || !line) { scheduleDiv.innerHTML = ""; return; }
 
-      const schedule = schedules[line];
+      const schedule = schedules[depot][line];
       let html = `<div class="table-container"><table><tr><th>Day</th><th>Shift Number</th><th>Shift Time</th></tr>`;
 
       for (let day in schedule.times) {
