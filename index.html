@@ -252,19 +252,48 @@
 
     // Update Line dropdown when Depot is chosen
     function updateLines() {
-      const depot = depotSelect.value;
-      lineSelect.innerHTML = `<option value="">-- Choose a line --</option>`;
+    const depotSelect = document.getElementById("depotSelect");
+    const lineSelect = document.getElementById("shiftLine");
+    const scheduleDiv = document.getElementById("schedule");
 
-      if (!depot || !schedules[depot]) return;
+    // Clear previous table
+    scheduleDiv.innerHTML = "";
 
-      for (let key in schedules[depot]) {
+    const depot = depotSelect.value;
+
+    // Clear and reset line options
+    lineSelect.innerHTML = '<option value="">-- Choose a line --</option>';
+
+    if (depot && schedules[depot]) {
+      for (let line in schedules[depot]) {
         const option = document.createElement("option");
-        option.value = key;
-        option.textContent = schedules[depot][key].name;
+        option.value = line;
+        option.textContent = schedules[depot][line].name;
         lineSelect.appendChild(option);
       }
     }
+  }
 
+  function displaySchedule() {
+    const depot = document.getElementById("depotSelect").value;
+    const line = document.getElementById("shiftLine").value;
+    const scheduleDiv = document.getElementById("schedule");
+
+    if (!depot || !line) {
+      scheduleDiv.innerHTML = "";
+      return;
+    }
+
+    const times = schedules[depot][line].times;
+    let table = '<div class="table-container"><table><tr><th>Day</th><th>Train Number</th><th>Time</th></tr>';
+
+    for (let day in times) {
+      table += `<tr><td>${day}</td><td>${times[day].number}</td><td>${times[day].time}</td></tr>`;
+    }
+
+    table += '</table></div>';
+    scheduleDiv.innerHTML = table;
+  }
     // Show schedule table
     function displaySchedule() {
       const depot = depotSelect.value;
@@ -306,4 +335,3 @@
 </html>
 
 </html>
-
