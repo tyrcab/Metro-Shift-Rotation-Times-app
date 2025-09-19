@@ -12,7 +12,7 @@
     header img { height: 60px; margin-top: 10px; }
     header h2 { margin: 5px 0; }
     header .description { color: #1E90FF; font-weight: bold; margin-bottom: 10px; }
-    select { width: 90%; max-width: 400px; padding: 10px; margin: 10px auto; display: block; font-size: 1rem; border-radius: 6px; border: 1px solid #ccc; text-align: center; }
+    select { width: 90%; max-width: 400px; padding: 10px; margin: 12px auto; display: block; font-size: 1rem; border-radius: 8px; border: 1px solid #ccc; text-align: center; }
     .table-container { overflow-x: auto; margin: 10px; }
     table { border-collapse: collapse; width: 100%; background: white; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 0.9rem; }
@@ -33,11 +33,16 @@
 
   <!-- Depot Selector -->
   <select id="depotSelect" onchange="updateLines()">
-    <option value="">-- Choose a depot --</option>
-    <option value="CBE">Cranbourne (CBE)</option>
-    <option value="DNG">Dandenong (DNG)</option>
-    <option value="EPH">East Pakenham (EPH)</option>
-    <option value="PED">Pakenham East (PED)</option>
+   	 <option value="">-- Choose a depot --</option>
+   	 <option value="CBE">Cranbourne (CBE)</option>
+   	 <option value="DNG">Dandenong (DNG)</option>
+   	 <option value="EPH">East Pakenham (EPH)</option>
+   	 <option value="FKN">Frankston (FKN)</option>
+   	 <option value="KAN">Kananook (KAN)</option>
+   	 <option value="MOR">Mordialloc (MOR)</option>
+    	<option value="PED">Pakenham East (PED)</option>
+   	 <option value="SHM">Sandringham (SHM)</option>
+	<option value="WTL">Westall (WTL)</option>
   </select>
 
   <!-- Line Selector -->
@@ -46,6 +51,62 @@
   </select>
 
   <div id="schedule"></div>
+
+<!-- Terms of Service Modal -->
+<div id="tosModal" style="
+  display: none; /* MUST be hidden initially */
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+  align-items: center;
+  justify-content: center;
+">
+  <div style="
+    background-color: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    position: relative;
+    text-align: center;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  ">
+    <span id="closeTOS" style="
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+    ">&times;</span>
+
+    <!-- Logo -->
+    <img src="icons/icon-192.png" alt="Depot Logo" style="height: 60px; margin-bottom: 15px;">
+
+    <h2 style="color:#1E90FF; margin-bottom: 15px;">Terms of Service</h2>
+
+    <ul style="text-align: left; margin: 0 auto; max-width: 400px; line-height: 1.6;">
+  <li>This application derives information from the most recent master roster available.</li>
+  <li>Errors may be present, due to it being impractical to check every single entry.</li>
+  <li>The wall sheet <strong>MUST</strong> be checked weekly for actual shift details.</li>
+</ul>
+  </div>
+</div>
+
+<div style="text-align: center; margin: 10px 0; font-size: 0.9rem;">
+  <a href="#" id="tosLink" style="color: #1E90FF; text-decoration: underline;">
+    Terms of Service
+  </a>
+</div>
 
 <!-- Sticky Footer -->
 <footer style="
@@ -85,6 +146,32 @@
     }
   }
 </style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const tosModal = document.getElementById("tosModal");
+    const tosLink = document.getElementById("tosLink");
+    const closeTOS = document.getElementById("closeTOS");
+
+    // Open modal on link click
+    tosLink.onclick = function(e) {
+      e.preventDefault();
+      tosModal.style.display = "flex";
+    }
+
+    // Close modal when clicking the X
+    closeTOS.onclick = function() {
+      tosModal.style.display = "none";
+    }
+
+    // Close modal when clicking outside modal content
+    window.onclick = function(event) {
+      if (event.target == tosModal) {
+        tosModal.style.display = "none";
+      }
+    }
+  });
+</script>
 
   <script>
     // Group schedules by Depot
@@ -163,46 +250,122 @@
   line32: { name:"Line 32", times:{ Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"110", time:"15:30 - 23:18"}, Tuesday:{number:"110", time:"15:30 - 23:18"}, Wednesday:{number:"AV42", time:"17:00 - 25:00"}, Thursday:{number:"8018", time:"17:00 - 01:00"}, Friday:{number:"AV42", time:"17:00 - 01:00"}, Saturday:{number:"OFF", time:"OFF"} } }
         //... Add Cranbourne lines here
       },
-      EPH:{
-  line1: { name:"Line 1", times:{
-    Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"DDO", time:"DDO"}, Tuesday:{number:"OFF", time:"OFF"}, Wednesday:{number:"AV15", time:"04:00 - 12:00"}, Thursday:{number:"AV11", time:"05:00 - 13:00"}, Friday:{number:"145", time:"05:09 - 12:56"}, Saturday:{number:"91", time:"03:33 - 11:26"}
-  }},
-  line2: { name:"Line 2", times:{
-    Sunday:{number:"72", time:"12:27 - 20:16"}, Monday:{number:"144", time:"14:12 - 22:12"}, Tuesday:{number:"144", time:"14:12 - 22:12"}, Wednesday:{number:"OFF", time:"OFF"}, Thursday:{number:"OFF", time:"OFF"}, Friday:{number:"146", time:"12:12 - 19:51"}, Saturday:{number:"90", time:"12:46 - 20:30"}
-  }},
-  line3: { name:"Line 3", times:{
-    Sunday:{number:"AV9", time:"08:30 - 16:30"}, Monday:{number:"139", time:"06:41 - 14:36"}, Tuesday:{number:"OFF", time:"OFF"}, Wednesday:{number:"139", time:"06:41 - 14:36"}, Thursday:{number:"137", time:"04:41 - 12:56"}, Friday:{number:"147", time:"05:34 - 12:36"}, Saturday:{number:"OFF", time:"OFF"}
-  }},
-  line4: { name:"Line 4", times:{
-    Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"138", time:"10:23 - 18:10"}, Tuesday:{number:"140", time:"12:19 - 20:08"}, Wednesday:{number:"138", time:"10:23 - 18:10"}, Thursday:{number:"140", time:"12:19 - 20:08"}, Friday:{number:"148", time:"12:16 - 20:08"}, Saturday:{number:"OFF", time:"OFF"}
-  }},
-  line5: { name:"Line 5", times:{
-    Sunday:{number:"69", time:"02:21 - 09:46"}, Monday:{number:"AV15", time:"04:00 - 12:00"}, Tuesday:{number:"137", time:"04:41 - 12:56"}, Wednesday:{number:"137", time:"04:41 - 12:56"}, Thursday:{number:"OFF", time:"OFF"}, Friday:{number:"DDO", time:"DDO"}, Saturday:{number:"OFF", time:"OFF"}
-  }},
-  line6: { name:"Line 6", times:{
-    Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"OFF", time:"OFF"}, Tuesday:{number:"AV58", time:"19:00 - 03:00"}, Wednesday:{number:"8022", time:"19:00 - 03:00"}, Thursday:{number:"8022", time:"19:00 - 03:00"}, Friday:{number:"152", time:"19:10 - 03:10"}, Saturday:{number:"92", time:"18:46 - 02:45"}
-  }},
-  line7: { name:"Line 7", times:{
-    Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"137", time:"04:41 - 12:56"}, Tuesday:{number:"139", time:"06:41 - 14:36"}, Wednesday:{number:"AV11", time:"05:00 - 13:00"}, Thursday:{number:"139", time:"06:41 - 14:36"}, Friday:{number:"OFF", time:"OFF"}, Saturday:{number:"89", time:"02:41 - 10:11"}
-  }},
-  line8: { name:"Line 8", times:{
-    Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"142", time:"12:28 - 20:24"}, Tuesday:{number:"142", time:"12:28 - 20:24"}, Wednesday:{number:"144", time:"14:12 - 22:12"}, Thursday:{number:"144", time:"14:12 - 22:12"}, Friday:{number:"150", time:"14:19 - 22:19"}, Saturday:{number:"OFF", time:"OFF"}
-  }},
-  line9: { name:"Line 9", times:{
-    Sunday:{number:"71", time:"09:17 - 17:16"}, Monday:{number:"141", time:"09:34 - 17:26"}, Tuesday:{number:"AV33", time:"09:00 - 17:00"}, Wednesday:{number:"141", time:"09:34 - 17:26"}, Thursday:{number:"OFF", time:"OFF"}, Friday:{number:"DDO", time:"DDO"}, Saturday:{number:"OFF", time:"OFF"}
-  }},
-  line10: { name:"Line 10", times:{
-    Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"8022", time:"19:00 - 03:00"}, Tuesday:{number:"8022", time:"19:00 - 03:00"}, Wednesday:{number:"OFF", time:"OFF"}, Thursday:{number:"AV58", time:"19:00 - 03:00"}, Friday:{number:"154", time:"20:35 - 03:57"}, Saturday:{number:"94", time:"20:45 - 03:45"}
-  }},
-  line11: { name:"Line 11", times:{
-    Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"AV7", time:"08:00 - 16:00"}, Tuesday:{number:"141", time:"09:34 - 17:26"}, Wednesday:{number:"OFF", time:"OFF"}, Thursday:{number:"141", time:"09:34 - 17:26"}, Friday:{number:"149", time:"09:58 - 17:52"}, Saturday:{number:"8025", time:"08:00 - 16:00"}
-  }},
-  line12: { name:"Line 12", times:{
-    Sunday:{number:"70", time:"11:28 - 18:56"}, Monday:{number:"140", time:"12:19 - 20:08"}, Tuesday:{number:"138", time:"10:23 - 18:10"}, Wednesday:{number:"140", time:"12:19 - 20:08"}, Thursday:{number:"138", time:"10:23 - 18:10"}, Friday:{number:"OFF", time:"OFF"}, Saturday:{number:"OFF", time:"OFF"}
-  }}      
-        //...Add East Pakenham lines here
+	EPH:{
+  line1:{name:"Line 1",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"AV15",time:"04:00 - 12:00"},Thursday:{number:"AV11",time:"05:00 - 13:00"},Friday:{number:"145",time:"05:09 - 12:56"},Saturday:{number:"91",time:"03:33 - 11:26"}}},
+  line2:{name:"Line 2",times:{Sunday:{number:"72",time:"12:27 - 20:16"},Monday:{number:"144",time:"14:12 - 22:12"},Tuesday:{number:"144",time:"14:12 - 22:12"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"146",time:"12:12 - 19:51"},Saturday:{number:"90",time:"12:46 - 20:30"}}},
+  line3:{name:"Line 3",times:{Sunday:{number:"AV9",time:"08:30 - 16:30"},Monday:{number:"139",time:"06:41 - 14:36"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"139",time:"06:41 - 14:36"},Thursday:{number:"137",time:"04:41 - 12:56"},Friday:{number:"147",time:"05:34 - 12:36"},Saturday:{number:"OFF",time:"OFF"}}},
+  line4:{name:"Line 4",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"138",time:"10:23 - 18:10"},Tuesday:{number:"140",time:"12:19 - 20:08"},Wednesday:{number:"138",time:"10:23 - 18:10"},Thursday:{number:"140",time:"12:19 - 20:08"},Friday:{number:"148",time:"12:16 - 20:08"},Saturday:{number:"OFF",time:"OFF"}}},
+  line5:{name:"Line 5",times:{Sunday:{number:"69",time:"02:21 - 09:46"},Monday:{number:"AV15",time:"04:00 - 12:00"},Tuesday:{number:"137",time:"04:41 - 12:56"},Wednesday:{number:"137",time:"04:41 - 12:56"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line6:{name:"Line 6",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"AV58",time:"19:00 - 03:00"},Wednesday:{number:"8022",time:"19:00 - 03:00"},Thursday:{number:"8022",time:"19:00 - 03:00"},Friday:{number:"152",time:"19:10 - 03:10"},Saturday:{number:"92",time:"18:46 - 02:45"}}},
+  line7:{name:"Line 7",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"137",time:"04:41 - 12:56"},Tuesday:{number:"139",time:"06:41 - 14:36"},Wednesday:{number:"AV11",time:"05:00 - 13:00"},Thursday:{number:"139",time:"06:41 - 14:36"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"89",time:"02:41 - 10:11"}}},
+  line8:{name:"Line 8",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"142",time:"12:28 - 20:24"},Tuesday:{number:"142",time:"12:28 - 20:24"},Wednesday:{number:"144",time:"14:12 - 22:12"},Thursday:{number:"144",time:"14:12 - 22:12"},Friday:{number:"150",time:"14:19 - 22:19"},Saturday:{number:"OFF",time:"OFF"}}},
+  line9:{name:"Line 9",times:{Sunday:{number:"71",time:"09:17 - 17:16"},Monday:{number:"141",time:"09:34 - 17:26"},Tuesday:{number:"AV33",time:"09:00 - 17:00"},Wednesday:{number:"141",time:"09:34 - 17:26"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line10:{name:"Line 10",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"8022",time:"19:00 - 03:00"},Tuesday:{number:"8022",time:"19:00 - 03:00"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"AV58",time:"19:00 - 03:00"},Friday:{number:"154",time:"20:35 - 03:57"},Saturday:{number:"94",time:"20:45 - 03:45"}}},
+  line11:{name:"Line 11",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"AV7",time:"08:00 - 16:00"},Tuesday:{number:"141",time:"09:34 - 17:26"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"141",time:"09:34 - 17:26"},Friday:{number:"149",time:"09:58 - 17:52"},Saturday:{number:"8025",time:"08:00 - 16:00"}}},
+  line12:{name:"Line 12",times:{Sunday:{number:"70",time:"11:28 - 18:56"},Monday:{number:"140",time:"12:19 - 20:08"},Tuesday:{number:"138",time:"10:23 - 18:10"},Wednesday:{number:"140",time:"12:19 - 20:08"},Thursday:{number:"138",time:"10:23 - 18:10"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}}
+            //...Add East Pakenham lines here
       },
-      PED: {
+
+	FKN :{
+  line1:{name:"Line 1",times:{Sunday:{number:"113",time:"01:57 - 09:27"},Monday:{number:"211",time:"02:26 - 09:41"},Tuesday:{number:"AV15",time:"04:00 - 12:00"},Wednesday:{number:"AV15",time:"04:00 - 12:00"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line2:{name:"Line 2",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"604",time:"12:28 - 20:39"},Wednesday:{number:"220",time:"12:19 - 20:17"},Thursday:{number:"220",time:"12:19 - 20:17"},Friday:{number:"604",time:"12:17 - 20:17"},Saturday:{number:"150",time:"12:45 - 20:48"}}},
+  line3:{name:"Line 3",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"217",time:"03:19 - 11:28"},Tuesday:{number:"AV11",time:"05:00 - 13:00"},Wednesday:{number:"217",time:"03:19 - 11:28"},Thursday:{number:"603",time:"04:40 - 12:40"},Friday:{number:"221",time:"03:42 - 11:58"},Saturday:{number:"OFF",time:"OFF"}}},
+  line4:{name:"Line 4",times:{Sunday:{number:"114",time:"10:17 - 18:07"},Monday:{number:"214",time:"10:30 - 18:09"},Tuesday:{number:"218",time:"11:19 - 19:18"},Wednesday:{number:"218",time:"11:19 - 19:18"},Thursday:{number:"602",time:"10:28 - 18:07"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+  line5:{name:"Line 5",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"223",time:"06:23 - 14:38"},Thursday:{number:"AV11",time:"05:00 - 13:00"},Friday:{number:"225",time:"06:18 - 14:18"},Saturday:{number:"179",time:"07:49 - 16:07"}}},
+  line6:{name:"Line 6",times:{Sunday:{number:"116",time:"10:41 - 19:08"},Monday:{number:"218",time:"11:19 - 19:18"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"212",time:"10:19 - 18:18"},Thursday:{number:"212",time:"10:19 - 18:18"},Friday:{number:"220",time:"11:55 - 19:52"},Saturday:{number:"OFF",time:"OFF"}}},
+  line7:{name:"Line 7",times:{Sunday:{number:"115",time:"03:12 - 11:07"},Monday:{number:"219",time:"03:22 - 11:31"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"219",time:"03:22 - 11:31"},Friday:{number:"601",time:"03:24 - 10:28"},Saturday:{number:"145",time:"05:11 - 12:57"}}},
+  line8:{name:"Line 8",times:{Sunday:{number:"120",time:"13:15 - 21:27"},Monday:{number:"224",time:"12:19 - 20:29"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"604",time:"12:28 - 20:17"},Friday:{number:"AV22",time:"12:00 - 20:00"},Saturday:{number:"144",time:"10:50 - 18:27"}}},
+  line9:{name:"Line 9",times:{Sunday:{number:"125",time:"09:29 - 17:27"},Monday:{number:"AV3",time:"07:30 - 15:30"},Tuesday:{number:"AV21",time:"05:30 - 13:30"},Wednesday:{number:"AV21",time:"05:30 - 13:30"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line10:{name:"Line 10",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"232",time:"17:57 - 01:52"},Wednesday:{number:"234",time:"18:00 - 02:00"},Thursday:{number:"230",time:"17:36 - 00:54"},Friday:{number:"234",time:"18:26 - 02:24"},Saturday:{number:"162",time:"19:30 - 03:24"}}},
+  line11:{name:"Line 11",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"215",time:"03:04 - 10:51"},Tuesday:{number:"213",time:"03:00 - 11:00"},Wednesday:{number:"215",time:"03:04 - 10:51"},Thursday:{number:"601",time:"03:24 - 10:28"},Friday:{number:"603",time:"04:40 - 12:29"},Saturday:{number:"OFF",time:"OFF"}}},
+  line12:{name:"Line 12",times:{Sunday:{number:"124",time:"16:19 - 00:37"},Monday:{number:"230",time:"17:36 - 00:54"},Tuesday:{number:"230",time:"17:36 - 00:54"},Wednesday:{number:"232",time:"17:57 - 01:52"},Thursday:{number:"234",time:"18:00 - 02:00"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+  line13:{name:"Line 13",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"211",time:"02:26 - 09:41"},Thursday:{number:"215",time:"03:04 - 10:51"},Friday:{number:"287",time:"03:42 - 10:44"},Saturday:{number:"AV19",time:"03:00 - 11:00"}}},
+  line14:{name:"Line 14",times:{Sunday:{number:"126",time:"17:15 - 01:35"},Monday:{number:"228",time:"17:16 - 01:12"},Tuesday:{number:"234",time:"18:00 - 02:00"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"606",time:"15:33 - 23:24"},Saturday:{number:"158",time:"17:30 - 01:55"}}},
+  line15:{name:"Line 15",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"221",time:"04:31 - 12:38"},Tuesday:{number:"217",time:"03:19 - 11:28"},Wednesday:{number:"213",time:"03:00 - 11:00"},Thursday:{number:"221",time:"04:31 - 12:38"},Friday:{number:"223",time:"04:31 - 12:28"},Saturday:{number:"OFF",time:"OFF"}}},
+  line16:{name:"Line 16",times:{Sunday:{number:"122",time:"15:59 - 23:59"},Monday:{number:"AV32",time:"14:30 - 22:30"},Tuesday:{number:"226",time:"12:59 - 21:00"},Wednesday:{number:"226",time:"12:59 - 21:00"},Thursday:{number:"606",time:"14:55 - 22:55"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+  line17:{name:"Line 17",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"601",time:"03:24 - 10:28"},Thursday:{number:"217",time:"03:19 - 11:28"},Friday:{number:"219",time:"03:24 - 11:18"},Saturday:{number:"601",time:"05:11 - 13:11"}}},
+  line18:{name:"Line 18",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"602",time:"10:28 - 18:07"},Tuesday:{number:"602",time:"10:28 - 18:07"},Wednesday:{number:"216",time:"10:39 - 18:38"},Thursday:{number:"214",time:"10:30 - 18:09"},Friday:{number:"222",time:"12:19 - 20:29"},Saturday:{number:"OFF",time:"OFF"}}},
+  line19:{name:"Line 19",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"213",time:"03:00 - 11:00"},Tuesday:{number:"211",time:"02:26 - 09:41"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"213",time:"03:00 - 11:00"},Friday:{number:"217",time:"03:04 - 11:09"},Saturday:{number:"143",time:"04:32 - 12:47"}}},
+  line20:{name:"Line 20",times:{Sunday:{number:"AV22",time:"12:00 - 20:00"},Monday:{number:"220",time:"12:19 - 20:17"},Tuesday:{number:"220",time:"12:19 - 20:17"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"214",time:"10:28 - 18:18"},Saturday:{number:"142",time:"10:39 - 18:46"}}},
+  line21:{name:"Line 21",times:{Sunday:{number:"127",time:"09:49 - 17:37"},Monday:{number:"227",time:"09:29 - 17:28"},Tuesday:{number:"227",time:"09:29 - 17:28"},Wednesday:{number:"225",time:"08:39 - 15:48"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line22:{name:"Line 22",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"224",time:"12:19 - 20:29"},Wednesday:{number:"222",time:"12:34 - 20:29"},Thursday:{number:"222",time:"12:34 - 20:29"},Friday:{number:"224",time:"12:49 - 21:00"},Saturday:{number:"602",time:"13:32 - 21:26"}}},
+  line23:{name:"Line 23",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"601",time:"03:24 - 10:28"},Tuesday:{number:"215",time:"03:04 - 10:51"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"285",time:"04:02 - 11:48"},Friday:{number:"215",time:"03:00 - 11:00"},Saturday:{number:"139",time:"03:07 - 11:07"}}},
+  line24:{name:"Line 24",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"216",time:"10:39 - 18:38"},Tuesday:{number:"216",time:"10:39 - 18:38"},Wednesday:{number:"602",time:"10:28 - 18:07"},Thursday:{number:"218",time:"11:19 - 19:18"},Friday:{number:"602",time:"12:17 - 20:17"},Saturday:{number:"OFF",time:"OFF"}}},
+  line25:{name:"Line 25",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"227",time:"09:29 - 17:28"},Thursday:{number:"225",time:"08:39 - 15:48"},Friday:{number:"AV7",time:"08:00 - 16:00"},Saturday:{number:"603",time:"09:46 - 17:18"}}},
+  line26:{name:"Line 26",times:{Sunday:{number:"128",time:"17:55 - 01:55"},Monday:{number:"234",time:"18:00 - 02:00"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"228",time:"17:16 - 01:12"},Friday:{number:"232",time:"18:05 - 01:52"},Saturday:{number:"160",time:"18:25 - 02:24"}}},
+  line27:{name:"Line 27",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"225",time:"08:39 - 15:48"},Tuesday:{number:"225",time:"08:39 - 15:48"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"227",time:"09:29 - 17:28"},Friday:{number:"229",time:"09:19 - 16:59"},Saturday:{number:"149",time:"09:29 - 17:47"}}},
+  line28:{name:"Line 28",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"212",time:"10:19 - 18:18"},Tuesday:{number:"212",time:"10:19 - 18:18"},Wednesday:{number:"AV22",time:"12:00 - 20:00"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"218",time:"10:54 - 18:38"},Saturday:{number:"AV65",time:"10:00 - 18:00"}}},
+  line29:{name:"Line 29",times:{Sunday:{number:"119",time:"06:11 - 14:37"},Monday:{number:"223",time:"06:23 - 14:38"},Tuesday:{number:"603",time:"04:40 - 12:40"},Wednesday:{number:"221",time:"04:31 - 12:38"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line30:{name:"Line 30",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"214",time:"10:30 - 18:09"},Wednesday:{number:"214",time:"10:30 - 18:09"},Thursday:{number:"216",time:"10:39 - 18:38"},Friday:{number:"216",time:"10:32 - 18:28"},Saturday:{number:"140",time:"10:17 - 18:37"}}},
+  line31:{name:"Line 31",times:{Sunday:{number:"121",time:"06:51 - 14:57"},Monday:{number:"AV23",time:"07:00 - 15:00"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"223",time:"06:23 - 14:38"},Friday:{number:"AV1",time:"06:30 - 14:30"},Saturday:{number:"181",time:"08:09 - 16:17"}}},
+  line32:{name:"Line 32",times:{Sunday:{number:"602",time:"17:04 - 01:27"},Monday:{number:"232",time:"17:57 - 01:52"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"230",time:"17:36 - 00:54"},Thursday:{number:"232",time:"17:57 - 01:52"},Friday:{number:"236",time:"19:40 - 03:24"},Saturday:{number:"OFF",time:"OFF"}}},
+  line33:{name:"Line 33",times:{Sunday:{number:"117",time:"06:07 - 13:47"},Monday:{number:"AV11",time:"05:00 - 13:00"},Tuesday:{number:"221",time:"04:31 - 12:38"},Wednesday:{number:"603",time:"04:40 - 12:40"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line34:{name:"Line 34",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"604",time:"12:28 - 20:39"},Tuesday:{number:"222",time:"12:34 - 20:29"},Wednesday:{number:"604",time:"12:28 - 20:39"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"228",time:"14:06 - 21:43"},Saturday:{number:"154",time:"13:05 - 20:48"}}},
+  line35:{name:"Line 35",times:{Sunday:{number:"603",time:"09:16 - 17:16"},Monday:{number:"AV3",time:"07:30 - 15:30"},Tuesday:{number:"223",time:"06:23 - 14:38"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"227",time:"08:29 - 16:28"},Saturday:{number:"147",time:"08:49 - 17:17"}}},
+  line36:{name:"Line 36",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"222",time:"12:34 - 20:29"},Tuesday:{number:"AV4",time:"13:00 - 21:00"},Wednesday:{number:"224",time:"12:19 - 20:29"},Thursday:{number:"224",time:"12:19 - 20:29"},Friday:{number:"226",time:"14:00 - 22:00"},Saturday:{number:"OFF",time:"OFF"}}},
+  line37:{name:"Line 37",times:{Sunday:{number:"601",time:"05:51 - 13:03"},Monday:{number:"603",time:"04:40 - 12:40"},Tuesday:{number:"601",time:"03:24 - 10:28"},Wednesday:{number:"219",time:"03:22 - 11:31"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line38:{name:"Line 38",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"228",time:"17:16 - 01:12"},Wednesday:{number:"228",time:"17:16 - 01:12"},Thursday:{number:"AV42",time:"17:00 - 01:00"},Friday:{number:"230",time:"16:47 - 00:52"},Saturday:{number:"156",time:"17:05 - 00:55"}}},
+  line39:{name:"Line 39",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"285",time:"04:02 - 11:48"},Tuesday:{number:"219",time:"03:22 - 11:31"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"211",time:"02:26 - 09:41"},Friday:{number:"213",time:"02:36 - 10:00"},Saturday:{number:"141",time:"04:12 - 12:17"}}},
+  line40:{name:"Line 40",times:{Sunday:{number:"118",time:"12:40 - 20:46"},Monday:{number:"226",time:"12:59 - 21:00"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"AV18",time:"14:00 - 22:00"},Thursday:{number:"226",time:"12:59 - 21:00"},Friday:{number:"AV22",time:"12:00 - 20:00"},Saturday:{number:"OFF",time:"OFF"}}}
+ 	//...Add Frankston lines here
+	},
+
+	KAN :{
+  line1:{name:"Line 1",times:{Sunday:{number:"151",time:"08:00 - 16:12"},Monday:{number:"AV31",time:"06:00 - 14:00"},Tuesday:{number:"AV11",time:"05:00 - 13:00"},Wednesday:{number:"283",time:"04:14 - 12:32"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line2:{name:"Line 2",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"282",time:"16:05 - 00:19"},Wednesday:{number:"284",time:"16:25 - 00:36"},Thursday:{number:"280",time:"15:45 - 23:57"},Friday:{number:"8072",time:"17:00 - 01:00"},Saturday:{number:"182",time:"15:44 - 00:01"}}},
+  line3:{name:"Line 3",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"273",time:"03:08 - 10:52"},Tuesday:{number:"273",time:"03:08 - 10:52"},Wednesday:{number:"AV11",time:"05:00 - 13:00"},Thursday:{number:"283",time:"04:14 - 12:32"},Friday:{number:"291",time:"04:19 - 12:22"},Saturday:{number:"OFF",time:"OFF"}}},
+  line4:{name:"Line 4",times:{Sunday:{number:"150",time:"11:04 - 19:11"},Monday:{number:"268",time:"11:46 - 19:43"},Tuesday:{number:"268",time:"11:46 - 19:43"},Wednesday:{number:"270",time:"12:15 - 20:02"},Thursday:{number:"270",time:"12:15 - 20:02"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+  line5:{name:"Line 5",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"267",time:"02:35 - 10:02"},Thursday:{number:"267",time:"02:35 - 10:02"},Friday:{number:"273",time:"02:35 - 10:02"},Saturday:{number:"177",time:"03:44 - 11:02"}}},
+  line6:{name:"Line 6",times:{Sunday:{number:"152",time:"12:37 - 19:51"},Monday:{number:"270",time:"12:15 - 20:02"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"AV4",time:"13:00 - 21:00"},Friday:{number:"276",time:"11:54 - 20:02"},Saturday:{number:"180",time:"12:13 - 20:11"}}},
+  line7:{name:"Line 7",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"267",time:"02:35 - 10:02"},Tuesday:{number:"267",time:"02:35 - 10:02"},Wednesday:{number:"269",time:"02:47 - 09:52"},Thursday:{number:"269",time:"02:47 - 09:52"},Friday:{number:"279",time:"03:11 - 11:32"},Saturday:{number:"OFF",time:"OFF"}}},
+  line8:{name:"Line 8",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"276",time:"14:04 - 21:21"},Tuesday:{number:"276",time:"14:04 - 21:21"},Wednesday:{number:"AV4",time:"13:00 - 21:00"},Thursday:{number:"AV6",time:"15:00 - 23:00"},Friday:{number:"286",time:"15:54 - 00:19"},Saturday:{number:"OFF",time:"OFF"}}},
+  line9:{name:"Line 9",times:{Sunday:{number:"8055",time:"07:00 - 15:00"},Monday:{number:"AV23",time:"07:00 - 15:00"},Tuesday:{number:"AV11",time:"05:00 - 13:00"},Wednesday:{number:"AV11",time:"05:00 - 13:00"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line10:{name:"Line 10",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"280",time:"15:45 - 23:57"},Tuesday:{number:"278",time:"15:14 - 23:34"},Wednesday:{number:"278",time:"15:14 - 23:34"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"8066",time:"16:00 - 00:00"},Saturday:{number:"8050",time:"17:00 - 01:00"}}},
+  line11:{name:"Line 11",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"269",time:"02:47 - 09:52"},Tuesday:{number:"269",time:"02:47 - 09:52"},Wednesday:{number:"271",time:"03:01 - 11:23"},Thursday:{number:"281",time:"03:54 - 12:02"},Friday:{number:"289",time:"03:57 - 11:52"},Saturday:{number:"OFF",time:"OFF"}}},
+  line12:{name:"Line 12",times:{Sunday:{number:"156",time:"16:04 - 00:19"},Monday:{number:"282",time:"16:05 - 00:19"},Tuesday:{number:"280",time:"15:45 - 23:57"},Wednesday:{number:"7100",time:"17:00 - 01:00"},Thursday:{number:"282",time:"16:05 - 00:19"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+  line13:{name:"Line 13",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"273",time:"03:08 - 10:52"},Thursday:{number:"273",time:"03:08 - 10:52"},Friday:{number:"277",time:"03:01 - 10:24"},Saturday:{number:"8047",time:"05:00 - 13:00"}}},
+  line14:{name:"Line 14",times:{Sunday:{number:"8054",time:"16:00 - 00:00"},Monday:{number:"278",time:"15:14 - 23:34"},Tuesday:{number:"AV10",time:"16:00 - 00:00"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"278",time:"15:14 - 23:34"},Friday:{number:"8070",time:"17:00 - 01:00"},Saturday:{number:"OFF",time:"OFF"}}},
+  line15:{name:"Line 15",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"275",time:"03:20 - 11:23"},Tuesday:{number:"283",time:"04:14 - 12:32"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"271",time:"03:01 - 11:23"},Friday:{number:"283",time:"03:27 - 11:06"},Saturday:{number:"8041",time:"04:00 - 12:00"}}},
+  line16:{name:"Line 16",times:{Sunday:{number:"158",time:"16:44 - 00:57"},Monday:{number:"AV6",time:"15:00 - 23:00"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"AV6",time:"15:00 - 23:00"},Thursday:{number:"274",time:"13:24 - 20:57"},Friday:{number:"284",time:"15:15 - 23:34"},Saturday:{number:"OFF",time:"OFF"}}},
+  line17:{name:"Line 17",times:{Sunday:{number:"8059",time:"05:00 - 13:00"},Monday:{number:"279",time:"03:47 - 11:52"},Tuesday:{number:"279",time:"03:47 - 11:52"},Wednesday:{number:"281",time:"03:54 - 12:02"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line18:{name:"Line 18",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"270",time:"12:15 - 20:02"},Wednesday:{number:"268",time:"11:46 - 19:43"},Thursday:{number:"268",time:"11:46 - 19:43"},Friday:{number:"278",time:"11:59 - 20:11"},Saturday:{number:"146",time:"11:43 - 19:51"}}},
+  line19:{name:"Line 19",times:{Sunday:{number:"153",time:"08:31 - 16:52"},Monday:{number:"AV3",time:"07:30 - 15:30"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"AV31",time:"06:00 - 14:00"},Friday:{number:"8063",time:"07:30 - 15:30"},Saturday:{number:"185",time:"09:24 - 17:41"}}},
+  line20:{name:"Line 20",times:{Sunday:{number:"160",time:"17:03 - 01:19"},Monday:{number:"286",time:"18:19 - 01:42"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"286",time:"18:19 - 01:42"},Thursday:{number:"AV42",time:"17:00 - 01:00"},Friday:{number:"288",time:"17:04 - 01:16"},Saturday:{number:"OFF",time:"OFF"}}},
+  line21:{name:"Line 21",times:{Sunday:{number:"8053",time:"04:00 - 12:00"},Monday:{number:"277",time:"03:35 - 11:42"},Tuesday:{number:"277",time:"03:35 - 11:42"},Wednesday:{number:"275",time:"03:20 - 11:23"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line22:{name:"Line 22",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"AV22",time:"12:00 - 20:00"},Wednesday:{number:"272",time:"12:34 - 20:29"},Thursday:{number:"AV22",time:"12:00 - 20:00"},Friday:{number:"274",time:"11:34 - 19:43"},Saturday:{number:"178",time:"10:09 - 18:31"}}},
+  line23:{name:"Line 23",times:{Sunday:{number:"149",time:"07:01 - 14:51"},Monday:{number:"AV21",time:"05:30 - 13:30"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"279",time:"03:47 - 11:52"},Friday:{number:"285",time:"03:34 - 11:42"},Saturday:{number:"8049",time:"05:00 - 13:00"}}},
+  line24:{name:"Line 24",times:{Sunday:{number:"8056",time:"17:00 - 01:00"},Monday:{number:"7100",time:"17:00 - 01:00"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"280",time:"15:45 - 23:57"},Thursday:{number:"284",time:"16:25 - 00:36"},Friday:{number:"8064",time:"16:00 - 00:00"},Saturday:{number:"OFF",time:"OFF"}}},
+  line25:{name:"Line 25",times:{Sunday:{number:"8051",time:"06:00 - 14:00"},Monday:{number:"283",time:"04:14 - 12:32"},Tuesday:{number:"285",time:"04:19 - 12:02"},Wednesday:{number:"285",time:"04:19 - 12:02"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line26:{name:"Line 26",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"284",time:"16:25 - 00:36"},Wednesday:{number:"AV42",time:"17:00 - 01:00"},Thursday:{number:"286",time:"18:19 - 01:42"},Friday:{number:"8068",time:"17:00 - 01:00"},Saturday:{number:"8042",time:"18:00 - 02:00"}}},
+  line27:{name:"Line 27",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"275",time:"03:20 - 11:23"},Wednesday:{number:"277",time:"03:35 - 11:42"},Thursday:{number:"277",time:"03:35 - 11:42"},Friday:{number:"281",time:"03:20 - 11:23"},Saturday:{number:"8045",time:"04:00 - 12:00"}}},
+  line28:{name:"Line 28",times:{Sunday:{number:"7100",time:"17:00 - 01:00"},Monday:{number:"284",time:"16:25 - 00:36"},Tuesday:{number:"286",time:"18:19 - 01:42"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"AV42",time:"17:00 - 01:00"},Friday:{number:"AV42",time:"17:00 - 01:00"},Saturday:{number:"OFF",time:"OFF"}}},
+  line29:{name:"Line 29",times:{Sunday:{number:"8057",time:"05:00 - 13:00"},Monday:{number:"281",time:"03:54 - 12:02"},Tuesday:{number:"281",time:"03:54 - 12:02"},Wednesday:{number:"279",time:"03:47 - 11:52"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line30:{name:"Line 30",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"274",time:"13:24 - 20:57"},Wednesday:{number:"276",time:"14:04 - 21:21"},Thursday:{number:"276",time:"14:04 - 21:21"},Friday:{number:"282",time:"12:34 - 20:29"},Saturday:{number:"152",time:"12:52 - 20:31"}}},
+  line31:{name:"Line 31",times:{Sunday:{number:"155",time:"09:11 - 17:32"},Monday:{number:"AV3",time:"07:30 - 15:30"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"AV1",time:"06:30 - 14:30"},Friday:{number:"8061",time:"07:00 - 15:00"},Saturday:{number:"183",time:"08:52 - 16:32"}}},
+  line32:{name:"Line 32",times:{Sunday:{number:"8052",time:"14:00 - 22:00"},Monday:{number:"272",time:"12:34 - 20:29"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"AV18",time:"14:00 - 22:00"},Friday:{number:"280",time:"12:04 - 20:22"},Saturday:{number:"148",time:"12:04 - 19:31"}}},
+  line33:{name:"Line 33",times:{Sunday:{number:"123",time:"08:51 - 17:01"},Monday:{number:"AV23",time:"07:00 - 15:00"},Tuesday:{number:"AV21",time:"05:30 - 13:30"},Wednesday:{number:"AV21",time:"05:30 - 13:30"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line34:{name:"Line 34",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"7100",time:"17:00 - 01:00"},Wednesday:{number:"282",time:"16:05 - 00:19"},Thursday:{number:"7100",time:"17:00 - 01:00"},Friday:{number:"8062",time:"16:00 - 00:00"},Saturday:{number:"184",time:"16:53 - 01:19"}}},
+  line35:{name:"Line 35",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"271",time:"03:01 - 11:23"},Tuesday:{number:"271",time:"03:01 - 11:23"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"275",time:"03:20 - 11:23"},Friday:{number:"275",time:"02:48 - 09:52"},Saturday:{number:"8043",time:"03:00 - 11:00"}}},
+  line36:{name:"Line 36",times:{Sunday:{number:"154",time:"15:24 - 23:39"},Monday:{number:"274",time:"13:24 - 20:57"},Tuesday:{number:"272",time:"12:34 - 20:29"},Wednesday:{number:"274",time:"13:24 - 20:57"},Thursday:{number:"272",time:"12:34 - 20:29"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}}
+	//...Add Kananook lines here
+	},
+
+	MOR :{
+  line1:{name:"Line 1",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"323",time:"05:42 - 13:42"},Thursday:{number:"AV11",time:"05:00 - 13:00"},Friday:{number:"333",time:"05:53 - 13:42"},Saturday:{number:"213",time:"07:00 - 14:02"}}},
+  line2:{name:"Line 2",times:{Sunday:{number:"182",time:"13:20 - 21:13"},Monday:{number:"326",time:"13:20 - 21:11"},Tuesday:{number:"AV18",time:"14:00 - 22:00"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"334",time:"13:40 - 20:52"},Saturday:{number:"214",time:"14:00 - 21:36"}}},
+  line3:{name:"Line 3",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"321",time:"04:28 - 12:12"},Tuesday:{number:"321",time:"04:28 - 12:12"},Wednesday:{number:"AV15",time:"04:00 - 12:00"},Thursday:{number:"323",time:"05:42 - 13:42"},Friday:{number:"331",time:"04:57 - 12:56"},Saturday:{number:"OFF",time:"OFF"}}},
+  line4:{name:"Line 4",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"324",time:"12:55 - 20:52"},Tuesday:{number:"324",time:"12:55 - 20:52"},Wednesday:{number:"326",time:"13:20 - 21:11"},Thursday:{number:"326",time:"13:20 - 21:11"},Friday:{number:"336",time:"14:10 - 21:36"},Saturday:{number:"OFF",time:"OFF"}}},
+  line5:{name:"Line 5",times:{Sunday:{number:"179",time:"06:42 - 14:52"},Monday:{number:"323",time:"05:42 - 13:42"},Tuesday:{number:"323",time:"05:42 - 13:42"},Wednesday:{number:"321",time:"04:28 - 12:12"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line6:{name:"Line 6",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"326",time:"13:20 - 21:11"},Wednesday:{number:"322",time:"11:40 - 19:39"},Thursday:{number:"322",time:"11:40 - 19:39"},Friday:{number:"332",time:"12:55 - 20:52"},Saturday:{number:"212",time:"12:45 - 20:13"}}},
+  line7:{name:"Line 7",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"AV3",time:"07:30 - 15:30"},Tuesday:{number:"325",time:"08:47 - 16:43"},Wednesday:{number:"325",time:"08:47 - 16:43"},Thursday:{number:"AV23",time:"07:00 - 15:00"},Friday:{number:"AV23",time:"07:00 - 15:00"},Saturday:{number:"OFF",time:"OFF"}}},
+  line8:{name:"Line 8",times:{Sunday:{number:"180",time:"12:55 - 20:13"},Monday:{number:"322",time:"11:40 - 19:39"},Tuesday:{number:"322",time:"11:40 - 19:39"},Wednesday:{number:"324",time:"12:55 - 20:52"},Thursday:{number:"324",time:"12:55 - 20:52"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+  line9:{name:"Line 9",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"AV19",time:"03:00 - 11:00"},Thursday:{number:"321",time:"04:28 - 12:12"},Friday:{number:"AV19",time:"03:00 - 11:00"},Saturday:{number:"211",time:"01:05 - 08:35"}}},
+  line10:{name:"Line 10",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"328",time:"14:40 - 22:36"},Tuesday:{number:"8024",time:"14:00 - 22:00"},Wednesday:{number:"8024",time:"14:00 - 22:00"},Thursday:{number:"328",time:"14:40 - 22:36"},Friday:{number:"338",time:"14:40 - 21:56"},Saturday:{number:"OFF",time:"OFF"}}},
+  line11:{name:"Line 11",times:{Sunday:{number:"181",time:"08:38 - 16:42"},Monday:{number:"325",time:"08:47 - 16:43"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"AV3",time:"07:30 - 15:30"},Thursday:{number:"325",time:"08:47 - 16:43"},Friday:{number:"335",time:"09:16 - 17:15"},Saturday:{number:"OFF",time:"OFF"}}},
+  line12:{name:"Line 12",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"8024",time:"14:00 - 22:00"},Tuesday:{number:"328",time:"14:40 - 22:36"},Wednesday:{number:"328",time:"14:40 - 22:36"},Thursday:{number:"8024",time:"14:00 - 22:00"},Friday:{number:"8042",time:"16:00 - 00:00"},Saturday:{number:"OFF",time:"OFF"}}}
+	//...Add Mordialloc lines here
+	},
+      PED :{
   line1: { name: "Line 1", times: { Sunday:{number:"8071", time:"3:00 - 11:00"}, Monday:{number:"375", time:"2:45 - 9:52"}, Tuesday:{number:"AV15", time:"04:00 - 12:00"}, Wednesday:{number:"AV15", time:"04:00 - 12:00"}, Thursday:{number:"OFF", time:"OFF"}, Friday:{number:"DDO", time:"DDO"}, Saturday:{number:"OFF", time:"OFF"} } },
   line2: { name: "Line 2", times: { Sunday:{number:"OFF", time:"OFF"}, Monday:{number:"OFF", time:"OFF"}, Tuesday:{number:"376", time:"10:43 - 18:52"}, Wednesday:{number:"376", time:"10:43 - 18:52"}, Thursday:{number:"378", time:"11:29 - 19:22"}, Friday:{number:"398", time:"11:40 - 19:14"}, Saturday:{number:"8058", time:"12:00 - 20:00"} } },
   line3: { name: "Line 3", times: { Sunday:{number:"217", time:"8:26 - 16:26"}, Monday:{number:"OFF", time:"OFF"}, Tuesday:{number:"397", time:"09:41 - 17:23"}, Wednesday:{number:"AV7", time:"08:00 - 16:00"}, Thursday:{number:"OFF", time:"OFF"}, Friday:{number:"417", time:"09:31 - 17:23"}, Saturday:{number:"255", time:"09:31 - 17:26"} } },
@@ -244,7 +407,85 @@
   line39: { name: "Line 39", times: { Sunday:{number:"8077", time:"8:00 - 16:00"}, Monday:{number:"395", time:"06:32 - 14:28"}, Tuesday:{number:"OFF", time:"OFF"}, Wednesday:{number:"OFF", time:"391", time:"05:53 - 13:48"}, Thursday:{number:"411", time:"05:35 - 13:35"}, Saturday:{number:"8063", time:"5:00 - 13:00"} } },
   line40: { name: "Line 40", times: { Sunday:{number:"226", time:"18:22 - 26:12"}, Monday:{number:"388", time:"16:30 - 00:31"}, Tuesday:{number:"AV10", time:"16:00 - 00:00"}, Wednesday:{number:"386", time:"15:41 - 23:41"}, Thursday:{number:"384", time:"14:41 - 22:31"}, Friday:{number:"OFF", time:"OFF"}, Saturday:{number:"OFF", time:"OFF"} } }
         //...Add Pakenham East lines here
-      }
+      },
+	SHM :{
+  line1:{name:"Line 1",times:{Sunday:{number:"259",time:"08:54 - 17:10"},Monday:{number:"AV23",time:"07:00 - 15:00"},Tuesday:{number:"457",time:"08:01 - 15:56"},Wednesday:{number:"AV23",time:"07:00 - 15:00"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line2:{name:"Line 2",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"448",time:"12:51 - 20:51"},Wednesday:{number:"446",time:"12:37 - 20:35"},Thursday:{number:"446",time:"12:37 - 20:35"},Friday:{number:"470",time:"11:38 - 19:01"},Saturday:{number:"296",time:"11:33 - 19:30"}}},
+  line3:{name:"Line 3",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"449",time:"04:42 - 12:39"},Tuesday:{number:"447",time:"04:41 - 12:09"},Wednesday:{number:"449",time:"04:42 - 12:39"},Thursday:{number:"443",time:"04:09 - 12:09"},Friday:{number:"475",time:"04:46 - 12:39"},Saturday:{number:"OFF",time:"OFF"}}},
+  line4:{name:"Line 4",times:{Sunday:{number:"260",time:"16:48 - 00:35"},Monday:{number:"458",time:"16:24 - 00:35"},Tuesday:{number:"458",time:"16:24 - 00:35"},Wednesday:{number:"454",time:"14:42 - 22:30"},Thursday:{number:"454",time:"14:42 - 22:30"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+  line5:{name:"Line 5",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"443",time:"04:09 - 12:09"},Thursday:{number:"445",time:"04:22 - 11:54"},Friday:{number:"471",time:"04:22 - 11:39"},Saturday:{number:"295",time:"04:24 - 12:50"}}},
+  line6:{name:"Line 6",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"446",time:"12:37 - 20:35"},Tuesday:{number:"446",time:"12:37 - 20:35"},Wednesday:{number:"444",time:"12:21 - 20:05"},Thursday:{number:"444",time:"12:21 - 20:05"},Friday:{number:"472",time:"12:35 - 20:05"},Saturday:{number:"OFF",time:"OFF"}}},
+  line7:{name:"Line 7",times:{Sunday:{number:"255",time:"08:03 - 15:50"},Monday:{number:"455",time:"06:25 - 14:24"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"451",time:"05:16 - 12:54"},Friday:{number:"473",time:"04:42 - 11:54"},Saturday:{number:"299",time:"05:18 - 13:10"}}},
+  line8:{name:"Line 8",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"454",time:"14:42 - 22:30"},Tuesday:{number:"454",time:"14:42 - 22:30"},Wednesday:{number:"456",time:"15:55 - 00:15"},Thursday:{number:"456",time:"15:55 - 00:15"},Friday:{number:"480",time:"15:10 - 23:10"},Saturday:{number:"OFF",time:"OFF"}}},
+  line9:{name:"Line 9",times:{Sunday:{number:"253",time:"06:34 - 14:50"},Monday:{number:"453",time:"05:36 - 13:24"},Tuesday:{number:"451",time:"05:16 - 12:54"},Wednesday:{number:"455",time:"06:25 - 14:24"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line10:{name:"Line 10",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"456",time:"15:55 - 00:15"},Wednesday:{number:"460",time:"16:52 - 00:55"},Thursday:{number:"462",time:"17:06 - 01:00"},Friday:{number:"484",time:"17:06 - 01:35"},Saturday:{number:"306",time:"17:38 - 25:35"}}},
+  line11:{name:"Line 11",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"443",time:"04:09 - 12:09"},Tuesday:{number:"443",time:"04:09 - 12:09"},Wednesday:{number:"445",time:"04:22 - 11:54"},Thursday:{number:"449",time:"04:42 - 12:39"},Friday:{number:"477",time:"05:11 - 13:09"},Saturday:{number:"OFF",time:"OFF"}}},
+  line12:{name:"Line 12",times:{Sunday:{number:"262",time:"16:58 - 00:55"},Monday:{number:"460",time:"16:52 - 00:55"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"458",time:"16:24 - 00:35"},Thursday:{number:"460",time:"16:52 - 00:55"},Friday:{number:"482",time:"16:42 - 00:55"},Saturday:{number:"OFF",time:"OFF"}}},
+  line13:{name:"Line 13",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"451",time:"05:16 - 12:54"},Thursday:{number:"453",time:"05:36 - 13:24"},Friday:{number:"479",time:"05:36 - 12:54"},Saturday:{number:"301",time:"05:31 - 13:30"}}},
+  line14:{name:"Line 14",times:{Sunday:{number:"254",time:"14:33 - 22:30"},Monday:{number:"448",time:"12:51 - 20:51"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"448",time:"12:51 - 20:51"},Friday:{number:"474",time:"12:42 - 20:20"},Saturday:{number:"300",time:"12:57 - 20:50"}}},
+  line15:{name:"Line 15",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"445",time:"04:22 - 11:54"},Tuesday:{number:"445",time:"04:22 - 11:54"},Wednesday:{number:"447",time:"04:41 - 12:09"},Thursday:{number:"447",time:"04:41 - 12:09"},Friday:{number:"469",time:"04:09 - 11:24"},Saturday:{number:"OFF",time:"OFF"}}},
+  line16:{name:"Line 16",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"444",time:"12:21 - 20:05"},Tuesday:{number:"444",time:"12:21 - 20:05"},Wednesday:{number:"450",time:"13:12 - 20:50"},Thursday:{number:"452",time:"14:12 - 21:50"},Friday:{number:"478",time:"14:08 - 22:10"},Saturday:{number:"OFF",time:"OFF"}}},
+  line17:{name:"Line 17",times:{Sunday:{number:"257",time:"08:48 - 16:30"},Monday:{number:"457",time:"08:01 - 15:56"},Tuesday:{number:"455",time:"06:25 - 14:24"},Wednesday:{number:"AV7",time:"08:00 - 16:00"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line18:{name:"Line 18",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"452",time:"14:12 - 21:50"},Wednesday:{number:"452",time:"14:12 - 21:50"},Thursday:{number:"450",time:"13:12 - 20:50"},Friday:{number:"476",time:"13:42 - 21:10"},Saturday:{number:"302",time:"13:18 - 21:10"}}},
+  line19:{name:"Line 19",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"451",time:"05:16 - 12:54"},Tuesday:{number:"453",time:"05:36 - 13:24"},Wednesday:{number:"453",time:"05:36 - 13:24"},Thursday:{number:"455",time:"06:25 - 14:24"},Friday:{number:"481",time:"05:57 - 13:54"},Saturday:{number:"OFF",time:"OFF"}}},
+  line20:{name:"Line 20",times:{Sunday:{number:"258",time:"16:12 - 00:15"},Monday:{number:"456",time:"15:55 - 00:15"},Tuesday:{number:"460",time:"16:52 - 00:55"},Wednesday:{number:"462",time:"17:06 - 01:00"},Thursday:{number:"458",time:"16:24 - 00:35"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+  line21:{name:"Line 21",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"457",time:"08:01 - 15:56"},Thursday:{number:"457",time:"08:01 - 15:56"},Friday:{number:"483",time:"09:42 - 17:36"},Saturday:{number:"303",time:"09:28 - 17:10"}}},
+  line22:{name:"Line 22",times:{Sunday:{number:"264",time:"17:18 - 01:00"},Monday:{number:"462",time:"17:06 - 01:00"},Tuesday:{number:"462",time:"17:06 - 01:00"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"AV42",time:"17:00 - 01:00"},Saturday:{number:"304",time:"16:58 - 00:55"}}},
+  line23:{name:"Line 23",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"447",time:"04:41 - 12:09"},Tuesday:{number:"449",time:"04:42 - 12:39"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"AV15",time:"04:00 - 12:00"},Friday:{number:"AV15",time:"04:00 - 12:00"},Saturday:{number:"297",time:"04:43 - 12:30"}}},
+  line24:{name:"Line 24",times:{Sunday:{number:"256",time:"15:10 - 23:10"},Monday:{number:"450",time:"13:12 - 20:50"},Tuesday:{number:"450",time:"13:12 - 20:50"},Wednesday:{number:"448",time:"12:51 - 20:51"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"298",time:"12:38 - 19:50"}}}
+	//...Add Sandringham lines here
+	},
+	WTL :{
+  line1:{name:"Line 1",times:{Sunday:{number:"8035",time:"05:00 - 13:00"},Monday:{number:"AV11",time:"05:00 - 13:00"},Tuesday:{number:"527",time:"05:16 - 13:02"},Wednesday:{number:"527",time:"05:16 - 13:02"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line2:{name:"Line 2",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"526",time:"12:38 - 20:38"},Wednesday:{number:"520",time:"11:51 - 19:28"},Thursday:{number:"520",time:"11:51 - 19:28"},Friday:{number:"558",time:"12:24 - 19:37"},Saturday:{number:"360",time:"14:11 - 22:10"}}},
+  line3:{name:"Line 3",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"521",time:"03:54 - 11:39"},Tuesday:{number:"AV11",time:"05:00 - 13:00"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"519",time:"03:35 - 11:12"},Friday:{number:"551",time:"03:38 - 11:38"},Saturday:{number:"349",time:"05:05 - 12:49"}}},
+  line4:{name:"Line 4",times:{Sunday:{number:"312",time:"15:31 - 23:24"},Monday:{number:"538",time:"15:05 - 23:23"},Tuesday:{number:"536",time:"14:56 - 22:23"},Wednesday:{number:"538",time:"15:05 - 23:23"},Thursday:{number:"AV6",time:"15:00 - 23:00"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+  line5:{name:"Line 5",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"531",time:"07:00 - 15:00"},Thursday:{number:"531",time:"07:00 - 15:00"},Friday:{number:"8059",time:"06:00 - 14:00"},Saturday:{number:"357",time:"08:00 - 16:00"}}},
+  line6:{name:"Line 6",times:{Sunday:{number:"302",time:"10:24 - 18:12"},Monday:{number:"AV24",time:"11:00 - 19:00"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"AV24",time:"11:00 - 19:00"},Friday:{number:"552",time:"11:31 - 19:06"},Saturday:{number:"352",time:"11:49 - 19:48"}}},
+  line7:{name:"Line 7",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"523",time:"04:19 - 12:19"},Tuesday:{number:"517",time:"03:34 - 11:22"},Wednesday:{number:"517",time:"03:34 - 11:22"},Thursday:{number:"521",time:"03:54 - 11:39"},Friday:{number:"559",time:"05:44 - 13:39"},Saturday:{number:"OFF",time:"OFF"}}},
+  line8:{name:"Line 8",times:{Sunday:{number:"304",time:"10:46 - 17:59"},Monday:{number:"526",time:"12:38 - 20:38"},Tuesday:{number:"AV22",time:"12:00 - 20:00"},Wednesday:{number:"524",time:"12:15 - 20:03"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"354",time:"11:57 - 19:39"}}},
+  line9:{name:"Line 9",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"517",time:"03:34 - 11:22"},Tuesday:{number:"519",time:"03:35 - 11:12"},Wednesday:{number:"519",time:"03:35 - 11:12"},Thursday:{number:"517",time:"03:34 - 11:22"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line10:{name:"Line 10",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"8026",time:"14:00 - 22:00"},Wednesday:{number:"8026",time:"14:00 - 22:00"},Thursday:{number:"8028",time:"14:00 - 22:00"},Friday:{number:"556",time:"12:16 - 20:13"},Saturday:{number:"AV18",time:"14:00 - 22:00"}}},
+  line11:{name:"Line 11",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"519",time:"03:35 - 11:12"},Tuesday:{number:"523",time:"04:19 - 12:19"},Wednesday:{number:"521",time:"03:54 - 11:39"},Thursday:{number:"525",time:"05:05 - 12:42"},Friday:{number:"557",time:"05:16 - 13:02"},Saturday:{number:"OFF",time:"OFF"}}},
+  line12:{name:"Line 12",times:{Sunday:{number:"306",time:"11:49 - 19:48"},Monday:{number:"AV22",time:"12:00 - 20:00"},Tuesday:{number:"AV22",time:"12:00 - 20:00"},Wednesday:{number:"522",time:"11:54 - 19:43"},Thursday:{number:"526",time:"12:38 - 20:38"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+  line13:{name:"Line 13",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"8031",time:"04:00 - 12:00"},Thursday:{number:"8031",time:"04:00 - 12:00"},Friday:{number:"8049",time:"04:00 - 12:00"},Saturday:{number:"8069",time:"06:00 - 14:00"}}},
+  line14:{name:"Line 14",times:{Sunday:{number:"308",time:"14:06 - 21:54"},Monday:{number:"8026",time:"14:00 - 22:00"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"530",time:"14:07 - 21:36"},Thursday:{number:"AV4",time:"13:00 - 21:00"},Friday:{number:"564",time:"13:41 - 21:33"},Saturday:{number:"OFF",time:"OFF"}}},
+  line15:{name:"Line 15",times:{Sunday:{number:"301",time:"05:57 - 13:42"},Monday:{number:"525",time:"05:05 - 12:42"},Tuesday:{number:"8025",time:"05:00 - 13:00"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"549",time:"03:17 - 10:22"},Saturday:{number:"AV15",time:"04:00 - 12:00"}}},
+  line16:{name:"Line 16",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"520",time:"11:51 - 19:28"},Tuesday:{number:"522",time:"11:54 - 19:43"},Wednesday:{number:"AV4",time:"13:00 - 21:00"},Thursday:{number:"518",time:"11:15 - 19:16"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"350",time:"10:56 - 19:15"}}},
+  line17:{name:"Line 17",times:{Sunday:{number:"303",time:"07:26 - 15:22"},Monday:{number:"529",time:"06:10 - 14:02"},Tuesday:{number:"AV23",time:"07:00 - 15:00"},Wednesday:{number:"AV23",time:"07:00 - 15:00"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line18:{name:"Line 18",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"530",time:"14:07 - 21:36"},Wednesday:{number:"8034",time:"14:00 - 22:00"},Thursday:{number:"8034",time:"14:00 - 22:00"},Friday:{number:"568",time:"14:07 - 21:36"},Saturday:{number:"AV18",time:"14:00 - 22:00"}}},
+  line19:{name:"Line 19",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"8025",time:"05:00 - 13:00"},Tuesday:{number:"525",time:"05:05 - 12:42"},Wednesday:{number:"523",time:"04:19 - 12:19"},Thursday:{number:"527",time:"05:16 - 13:02"},Friday:{number:"555",time:"04:35 - 12:09"},Saturday:{number:"OFF",time:"OFF"}}},
+  line20:{name:"Line 20",times:{Sunday:{number:"310",time:"14:51 - 22:24"},Monday:{number:"534",time:"14:34 - 22:41"},Tuesday:{number:"532",time:"14:24 - 22:13"},Wednesday:{number:"532",time:"14:24 - 22:13"},Thursday:{number:"534",time:"14:34 - 22:41"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+  line21:{name:"Line 21",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"525",time:"05:05 - 12:42"},Thursday:{number:"8027",time:"05:00 - 13:00"},Friday:{number:"553",time:"03:49 - 11:39"},Saturday:{number:"8067",time:"05:00 - 13:00"}}},
+  line22:{name:"Line 22",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"530",time:"14:07 - 21:36"},Tuesday:{number:"AV4",time:"13:00 - 21:00"},Wednesday:{number:"534",time:"14:34 - 22:41"},Thursday:{number:"536",time:"14:56 - 22:23"},Friday:{number:"572",time:"15:05 - 22:41"},Saturday:{number:"OFF",time:"OFF"}}},
+  line23:{name:"Line 23",times:{Sunday:{number:"309",time:"09:37 - 17:39"},Monday:{number:"AV7",time:"08:00 - 16:00"},Tuesday:{number:"AV7",time:"08:00 - 16:00"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"8057",time:"06:00 - 14:00"},Saturday:{number:"353",time:"06:13 - 14:02"}}},
+  line24:{name:"Line 24",times:{Sunday:{number:"314",time:"16:54 - 00:54"},Monday:{number:"536",time:"14:56 - 22:23"},Tuesday:{number:"534",time:"14:34 - 22:41"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"532",time:"14:24 - 22:13"},Friday:{number:"8046",time:"16:00 - 00:00"},Saturday:{number:"OFF",time:"OFF"}}},
+  line25:{name:"Line 25",times:{Sunday:{number:"8031",time:"05:00 - 13:00"},Monday:{number:"8033",time:"04:00 - 12:00"},Tuesday:{number:"8029",time:"04:00 - 12:00"},Wednesday:{number:"AV31",time:"06:00 - 14:00"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line26:{name:"Line 26",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"538",time:"15:05 - 23:23"},Wednesday:{number:"536",time:"14:56 - 22:23"},Thursday:{number:"538",time:"15:05 - 23:23"},Friday:{number:"574",time:"16:01 - 23:33"},Saturday:{number:"366",time:"17:01- 00:54"}}},
+  line27:{name:"Line 27",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"8027",time:"05:00 - 13:00"},Tuesday:{number:"AV11",time:"05:00 - 13:00"},Wednesday:{number:"529",time:"06:10 - 14:02"},Thursday:{number:"529",time:"06:10 - 14:02"},Friday:{number:"561",time:"05:53 - 13:12"},Saturday:{number:"OFF",time:"OFF"}}},
+  line28:{name:"Line 28",times:{Sunday:{number:"AV4",time:"13:00 - 21:00"},Monday:{number:"518",time:"11:15 - 19:16"},Tuesday:{number:"520",time:"11:51 - 19:28"},Wednesday:{number:"526",time:"12:38 - 20:38"},Thursday:{number:"522",time:"11:54 - 19:43"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+  line29:{name:"Line 29",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"533",time:"09:45 - 17:45"},Thursday:{number:"533",time:"09:45 - 17:45"},Friday:{number:"AV33",time:"09:00 - 17:00"},Saturday:{number:"361",time:"09:37 - 17:39"}}},
+  line30:{name:"Line 30",times:{Sunday:{number:"8030",time:"14:00 - 22:00"},Monday:{number:"532",time:"14:24 - 22:13"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"530",time:"14:07 - 21:36"},Friday:{number:"566",time:"13:56 - 21:20"},Saturday:{number:"364",time:"15:34 - 23:24"}}},
+  line31:{name:"Line 31",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"531",time:"07:00 - 15:00"},Wednesday:{number:"AV33",time:"09:00 - 17:00"},Thursday:{number:"AV7",time:"08:00 - 16:00"},Friday:{number:"563",time:"07:00 - 15:00"},Saturday:{number:"359",time:"08:51 - 16:49"}}},
+  line32:{name:"Line 32",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"528",time:"13:41 - 21:13"},Tuesday:{number:"524",time:"12:15 - 20:03"},Wednesday:{number:"8028",time:"14:00 - 22:00"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"562",time:"13:04 - 20:53"},Saturday:{number:"358",time:"13:24 - 20:54"}}},
+  line33:{name:"Line 33",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"8031",time:"04:00 - 12:00"},Tuesday:{number:"8031",time:"04:00 - 12:00"},Wednesday:{number:"8025",time:"05:00 - 13:00"},Thursday:{number:"8025",time:"05:00 - 13:00"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line34:{name:"Line 34",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"518",time:"11:15 - 19:16"},Wednesday:{number:"518",time:"11:15 - 19:16"},Thursday:{number:"524",time:"12:15 - 20:03"},Friday:{number:"554",time:"11:36 - 19:28"},Saturday:{number:"AV20",time:"10:00 - 18:00"}}},
+  line35:{name:"Line 35",times:{Sunday:{number:"8049",time:"06:00 - 14:00"},Monday:{number:"AV31",time:"06:00 - 14:00"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"523",time:"04:19 - 12:19"},Friday:{number:"AV31",time:"06:00 - 14:00"},Saturday:{number:"355",time:"07:16 - 15:12"}}},
+  line36:{name:"Line 36",times:{Sunday:{number:"8036",time:"14:00 - 22:00"},Monday:{number:"524",time:"12:15 - 20:03"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"528",time:"13:41 - 21:13"},Friday:{number:"560",time:"13:01 - 20:53"},Saturday:{number:"356",time:"13:17 - 21:10"}}},
+  line37:{name:"Line 37",times:{Sunday:{number:"307",time:"09:31 - 17:29"},Monday:{number:"533",time:"09:45 - 17:45"},Tuesday:{number:"533",time:"09:45 - 17:45"},Wednesday:{number:"AV7",time:"08:00 - 16:00"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line38:{name:"Line 38",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"8032",time:"14:00 - 22:00"},Tuesday:{number:"8032",time:"14:00 - 22:00"},Wednesday:{number:"AV18",time:"14:00 - 22:00"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"570",time:"14:11 - 21:33"},Saturday:{number:"AV18",time:"14:00 - 22:00"}}},
+  line39:{name:"Line 39",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"OFF",time:"OFF"},Tuesday:{number:"521",time:"03:54 - 11:39"},Wednesday:{number:"8029",time:"04:00 - 12:00"},Thursday:{number:"8029",time:"04:00 - 12:00"},Friday:{number:"8047",time:"04:00 - 12:00"},Saturday:{number:"351",time:"05:43 - 13:32"}}},
+  line40:{name:"Line 40",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"522",time:"11:54 - 19:43"},Tuesday:{number:"528",time:"13:41 - 21:13"},Wednesday:{number:"528",time:"13:41 - 21:13"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"550",time:"11:19 - 19:16"},Saturday:{number:"348",time:"10:11 - 18:08"}}},
+  line41:{name:"Line 41",times:{Sunday:{number:"305",time:"09:00 - 17:19"},Monday:{number:"531",time:"07:00 - 15:00"},Tuesday:{number:"529",time:"06:10 - 14:02"},Wednesday:{number:"AV31",time:"06:00 - 14:00"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"DDO",time:"DDO"},Saturday:{number:"OFF",time:"OFF"}}},
+  line42:{name:"Line 42",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"8028",time:"14:00 - 22:00"},Tuesday:{number:"AV18",time:"14:00 - 22:00"},Wednesday:{number:"",time:"OFF"},Thursday:{number:"8026",time:"14:00 - 22:00"},Friday:{number:"8048",time:"16:00 - 00:00"},Saturday:{number:"362",time:"14:34 - 22:24"}}},
+  line43:{name:"Line 43",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"527",time:"05:16 - 13:02"},Tuesday:{number:"8027",time:"05:00 - 13:00"},Wednesday:{number:"8027",time:"05:00 - 13:00"},Thursday:{number:"AV11",time:"05:00 - 13:00"},Friday:{number:"8045",time:"05:00 - 13:00"},Saturday:{number:"OFF",time:"OFF"}}},
+  line44:{name:"Line 44",times:{Sunday:{number:"8032",time:"16:00 - 00:00"},Monday:{number:"8034",time:"14:00 - 22:00"},Tuesday:{number:"8034",time:"14:00 - 22:00"},Wednesday:{number:"8030",time:"16:00 - 00:00"},Thursday:{number:"8030",time:"16:00 - 00:00"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}},
+  line45:{name:"Line 45",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"DDO",time:"DDO"},Tuesday:{number:"OFF",time:"OFF"},Wednesday:{number:"8033",time:"04:00 - 12:00"},Thursday:{number:"8033",time:"04:00 - 12:00"},Friday:{number:"8051",time:"04:00 - 12:00"},Saturday:{number:"347",time:"04:04 - 11:09"}}},
+  line46:{name:"Line 46",times:{Sunday:{number:"8034",time:"16:00 - 00:00"},Monday:{number:"8030",time:"16:00 - 00:00"},Tuesday:{number:"8030",time:"16:00 - 00:00"},Wednesday:{number:"OFF",time:"OFF"},Thursday:{number:"OFF",time:"OFF"},Friday:{number:"8044",time:"16:00 - 00:00"},Saturday:{number:"368",time:"17:21 - 01:21"}}},
+  line47:{name:"Line 47",times:{Sunday:{number:"OFF",time:"OFF"},Monday:{number:"8029",time:"04:00 - 12:00"},Tuesday:{number:"8033",time:"04:00 - 12:00"},Wednesday:{number:"AV31",time:"06:00 - 14:00"},Thursday:{number:"AV31",time:"06:00 - 14:00"},Friday:{number:"8043",time:"05:00 - 13:00"},Saturday:{number:"OFF",time:"OFF"}}},
+  line48:{name:"Line 48",times:{Sunday:{number:"8038",time:"16:00 - 00:00"},Monday:{number:"AV18",time:"14:00 - 22:00"},Tuesday:{number:"8028",time:"14:00 - 22:00"},Wednesday:{number:"8032",time:"14:00 - 22:00"},Thursday:{number:"8032",time:"14:00 - 22:00"},Friday:{number:"OFF",time:"OFF"},Saturday:{number:"OFF",time:"OFF"}}}
+	//...Add Westall lines here 
+}
     };
 
     const depotSelect = document.getElementById("depotSelect");
