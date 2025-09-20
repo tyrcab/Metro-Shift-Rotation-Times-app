@@ -50,6 +50,35 @@
     <option value="">-- Choose a line --</option>
   </select>
 
+  <!-- Number of Lines Selector -->
+<div style="text-align: center; margin: 12px 0;">
+  <label for="numLines" style="
+    display: block;
+    font-weight: bold;
+    color: #1E90FF;
+    margin-bottom: 6px;
+    font-size: 1rem;
+  ">Choose number of lines to display:</label>
+  <select id="numLines" onchange="displaySchedule()" style="
+    width: 90%;
+    max-width: 400px;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+  ">
+    <option value="1">1 line</option>
+    <option value="2">2 lines</option>
+    <option value="3">3 lines</option>
+    <option value="4">4 lines</option>
+    <option value="5">5 lines</option>
+  </select>
+</div>
+
+
   <div id="schedule"></div>
 
 <!-- Terms of Service Modal -->
@@ -488,84 +517,76 @@
 }
     };
 
-    const depotSelect = document.getElementById("depotSelect");
+const depotSelect = document.getElementById("depotSelect");
     const lineSelect = document.getElementById("shiftLine");
 
     // Update Line dropdown when Depot is chosen
     function updateLines() {
-    const depotSelect = document.getElementById("depotSelect");
-    const lineSelect = document.getElementById("shiftLine");
-    const scheduleDiv = document.getElementById("schedule");
+  const depot = depotSelect.value;
+  const scheduleDiv = document.getElementById("schedule");
+  const numLinesSelect = document.getElementById("numLines");
 
-    // Clear previous table
-    scheduleDiv.innerHTML = "";
+  // Clear the schedule display
+  scheduleDiv.innerHTML = "";
 
-    const depot = depotSelect.value;
+  // Reset the number of lines to 1
+  numLinesSelect.value = "1";
 
-    // Clear and reset line options
-    lineSelect.innerHTML = '<option value="">-- Choose a line --</option>';
-
-    if (depot && schedules[depot]) {
-      for (let line in schedules[depot]) {
-        const option = document.createElement("option");
-        option.value = line;
-        option.textContent = schedules[depot][line].name;
-        lineSelect.appendChild(option);
-      }
+  // Reset and populate line dropdown
+  lineSelect.innerHTML = '<option value="">-- Choose a line --</option>';
+  if (depot && schedules[depot]) {
+    for (let line in schedules[depot]) {
+      const option = document.createElement("option");
+      option.value = line;
+      option.textContent = schedules[depot][line].name;
+      lineSelect.appendChild(option);
     }
   }
+}
 
-  function displaySchedule() {
-    const depot = document.getElementById("depotSelect").value;
-    const line = document.getElementById("shiftLine").value;
+function displaySchedule() {
+    const depot = depotSelect.value;
+    const line = lineSelect.value;
+    const numLinesSelect = document.getElementById("numLines");
     const scheduleDiv = document.getElementById("schedule");
 
     if (!depot || !line) {
-      scheduleDiv.innerHTML = "";
-      return;
+        scheduleDiv.innerHTML = "";
+        return;
     }
 
-    const times = schedules[depot][line].times;
-    let table = '<div class="table-container"><table><tr><th>Day</th><th>Train Number</th><th>Time</th></tr>';
+    const depotLines = Object.keys(schedules[depot]);
+    let startIndex = depotLines.indexOf(line);
+    const numLines = parseInt(numLinesSelect.value || "1", 10);
 
-    for (let day in times) {
-      table += `<tr><td>${day}</td><td>${times[day].number}</td><td>${times[day].time}</td></tr>`;
+    let html = '<div class="table-container"><table><tr><th>Day</th><th>Shift Number</th><th>Shift Time</th></tr>';
+
+    for (let i = 0; i < numLines; i++) {
+        const currentIndex = (startIndex + i) % depotLines.length; // cycle to top
+        const currentLine = depotLines[currentIndex];
+        const schedule = schedules[depot][currentLine];
+
+        for (let day in schedule.times) {
+            const shiftNumber = schedule.times[day].number;
+            const shiftTime = schedule.times[day].time;
+            let numberStyle = '';
+            let timeStyle = '';
+            if (shiftNumber === "OFF") numberStyle = 'style="color:green;font-weight:bold"';
+            if (shiftNumber === "DDO") numberStyle = 'style="color:red;font-weight:bold"';
+            if (shiftTime === "OFF") timeStyle = 'style="color:green;font-weight:bold"';
+            if (shiftTime === "DDO") timeStyle = 'style="color:red;font-weight:bold"';
+
+            html += `<tr>
+                        <td>${day} (${schedule.name})</td>
+                        <td ${numberStyle}>${shiftNumber}</td>
+                        <td ${timeStyle}>${shiftTime}</td>
+                     </tr>`;
+        }
     }
 
-    table += '</table></div>';
-    scheduleDiv.innerHTML = table;
-  }
-    // Show schedule table
-    function displaySchedule() {
-      const depot = depotSelect.value;
-      const line = lineSelect.value;
-      const scheduleDiv = document.getElementById("schedule");
-      if (!depot || !line) { scheduleDiv.innerHTML = ""; return; }
-
-      const schedule = schedules[depot][line];
-      let html = `<div class="table-container"><table><tr><th>Day</th><th>Shift Number</th><th>Shift Time</th></tr>`;
-
-      for (let day in schedule.times) {
-        const shiftNumber = schedule.times[day].number;
-        const shiftTime = schedule.times[day].time;
-
-        let numberStyle = '';
-        let timeStyle = '';
-        if (shiftNumber === "OFF") numberStyle = 'style="color:green;font-weight:bold"';
-        if (shiftNumber === "DDO") numberStyle = 'style="color:red;font-weight:bold"';
-        if (shiftTime === "OFF") timeStyle = 'style="color:green;font-weight:bold"';
-        if (shiftTime === "DDO") timeStyle = 'style="color:red;font-weight:bold"';
-
-        html += `<tr>
-          <td>${day}</td>
-          <td ${numberStyle}>${shiftNumber}</td>
-          <td ${timeStyle}>${shiftTime}</td>
-        </tr>`;
-      }
-
-      html += `</table></div>`;
-      scheduleDiv.innerHTML = html;
-    }
+    html += '</table></div>';
+    scheduleDiv.innerHTML = html;
+}
 
     // Register service worker
     if ('serviceWorker' in navigator) {
@@ -576,4 +597,3 @@
 </html>
 
 </html>
-
